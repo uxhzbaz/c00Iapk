@@ -39,12 +39,37 @@ import com.google.android.material.snackbar.Snackbar
 import java.net.URISyntaxException
 import java.net.URLDecoder
 import kotlin.system.exitProcess
-
+import com.example.c001apk.ui.main.MainActivity
+import com.example.c001apk.util.ActivityCollector
 
 class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
 
     private val link: String? by lazy { intent.getStringExtra("url") }
     private var webView: WebView? = null
+    private val isLogin: Boolean by lazy { intent.getBooleanExtra("isLogin", false) }
+    setCookie("m.coolapk.com", "token=${PrefManager.token}")
+if (isLogin) {
+    setCookie("https://www.coolapk.com", "DID=${PrefManager.SZLMID}; Domain=.coolapk.com; Path=/")
+    setCookie("https://www.coolapk.com", "forward=https://www.coolapk.com; Domain=.coolapk.com; Path=/")
+    setCookie("https://www.coolapk.com", "displayVersion=v14; Domain=.coolapk.com; Path=/")
+}
+
+if (isLogin && request.url.toString() == "https://www.coolapk.com/") {
+    val cookies = CookieManager.getInstance().getCookie("https://www.coolapk.com/")
+    fun cookie(name: String) = cookies?.split(";")?.map { it.trim() }
+        ?.firstOrNull { it.startsWith("$name=") }?.substringAfter("=")
+    val uid = cookie("uid"); val username = cookie("username"); val token = cookie("token")
+    if (!uid.isNullOrEmpty() && !username.isNullOrEmpty() && !token.isNullOrEmpty()) {
+        PrefManager.uid = uid; PrefManager.username = username; PrefManager.token = token
+        PrefManager.isLogin = true
+        ActivityCollector.recreateActivity(MainActivity::class.java.name)
+        Toast.makeText(this@WebViewActivity, "登录成功", Toast.LENGTH_SHORT).show()
+    } else {
+        Toast.makeText(this@WebViewActivity, "网页登录失败", Toast.LENGTH_SHORT).show()
+    }
+    finish()
+    return true
+}
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
