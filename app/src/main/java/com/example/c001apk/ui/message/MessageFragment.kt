@@ -19,7 +19,7 @@ import com.example.c001apk.adapter.LoadingState
 import com.example.c001apk.adapter.PlaceHolderAdapter
 import com.example.c001apk.databinding.FragmentMessageBinding
 import com.example.c001apk.ui.base.BaseFragment
-import com.example.c001apk.ui.login.LoginActivity
+import com.example.c001apk.ui.others.WebViewActivity
 import com.example.c001apk.ui.main.MainActivity
 import com.example.c001apk.util.CookieUtil
 import com.example.c001apk.util.CookieUtil.atcommentme
@@ -78,10 +78,11 @@ class MessageFragment : BaseFragment<FragmentMessageBinding>() {
             initMenu()
         } else {
             binding.clickToLogin.setOnClickListener {
-                IntentUtil.startActivity<LoginActivity>(requireContext()) {}
-            }
-        }
+                IntentUtil.startActivity<WebViewActivity>(requireContext()) {
+        putExtra("url", "https://account.coolapk.com/auth/login?type=mobile")
+        putExtra("isLogin", true)
     }
+ }
 
     private fun initObserve() {
         viewModel.countList.observe(viewLifecycleOwner) {
