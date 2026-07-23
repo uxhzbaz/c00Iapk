@@ -12,7 +12,6 @@ dependencyResolutionManagement {
         mavenCentral()
         maven ("https://jitpack.io")
         maven("https://oss.sonatype.org/content/repositories/public")
-        maven("https://jcenter.bintray.com")
         gradlePluginPortal()
     }
 }
