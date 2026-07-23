@@ -269,9 +269,29 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                             }
                         }
                         return super.shouldOverrideUrlLoading(webView, request)
+                                            override fun onPageFinished(view: WebView?, url: String?) {
+                        super.onPageFinished(view, url)
+                        if (BuildConfig.DEBUG) {
+                            view?.evaluateJavascript(
+                                "javascript:(function(){var s=document.createElement('script');" +
+                                        "s.src='https://cdn.jsdelivr.net/npm/eruda';" +
+                                        "document.body.appendChild(s);" +
+                                        "s.onload=function(){eruda.init()}})()",
+                                null
+                            )
+                        }
+                    }
+                 }
                     }
                 }
                 webChromeClient = object : WebChromeClient() {
+                                        override fun onConsoleMessage(consoleMessage: android.webkit.ConsoleMessage): Boolean {
+                        Log.d(
+                            "WebViewConsole",
+                            "${consoleMessage.message()} (${consoleMessage.sourceId()}:${consoleMessage.lineNumber()})"
+                        )
+                        return true
+                    }
                     override fun onCloseWindow(window: WebView?) {
                         super.onCloseWindow(window)
                         finish()
