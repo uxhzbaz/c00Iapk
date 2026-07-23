@@ -127,12 +127,14 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
             CookieManager.getInstance().apply {
                 setAcceptThirdPartyCookies(webView, true)
                 removeAllCookies { }
-                setCookie("m.coolapk.com", "DID=${PrefManager.SZLMID}")
-                setCookie("m.coolapk.com", "forward=https://www.coolapk.com")
-                setCookie("m.coolapk.com", "displayVersion=v14")
-                setCookie("m.coolapk.com", "uid=${PrefManager.uid}")
-                setCookie("m.coolapk.com", "username=${PrefManager.username}")
-                setCookie("m.coolapk.com", "token=${PrefManager.token}")
+                if (PrefManager.isLogin) {
+                    setCookie("m.coolapk.com", "DID=${PrefManager.SZLMID}")
+                    setCookie("m.coolapk.com", "forward=https://www.coolapk.com")
+                    setCookie("m.coolapk.com", "displayVersion=v14")
+                    setCookie("m.coolapk.com", "uid=${PrefManager.uid}")
+                    setCookie("m.coolapk.com", "username=${PrefManager.username}")
+                    setCookie("m.coolapk.com", "token=${PrefManager.token}")
+                }
                 flush()
             }
             it.apply {
