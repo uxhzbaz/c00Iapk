@@ -28,6 +28,7 @@ import androidx.core.view.isVisible
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import com.example.c001apk.R
+import com.example.c001apk.BuildConfig
 import com.example.c001apk.databinding.ActivityWebViewBinding
 import com.example.c001apk.ui.base.BaseActivity
 import com.example.c001apk.ui.main.MainActivity
@@ -55,6 +56,9 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
 
         setSupportActionBar(binding.toolBar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        if (BuildConfig.DEBUG) {
+            WebView.setWebContentsDebuggingEnabled(true)
+        }
 
         runCatching {
             webView = WebView(this).apply {
@@ -94,6 +98,7 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                 blockNetworkImage = false
                 mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 domStorageEnabled = true
+                databaseEnabled = true
                 setSupportZoom(true)
                 builtInZoomControls = true
                 displayZoomControls = false
@@ -121,7 +126,7 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                 }
             }
             CookieManager.getInstance().apply {
-                setAcceptThirdPartyCookies(webView, false)
+                setAcceptThirdPartyCookies(webView, true)
                 removeAllCookies { }
                 setCookie("m.coolapk.com", "DID=${PrefManager.SZLMID}")
                 setCookie("m.coolapk.com", "forward=https://www.coolapk.com")
