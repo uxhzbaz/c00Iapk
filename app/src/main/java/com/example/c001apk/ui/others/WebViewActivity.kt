@@ -134,11 +134,6 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                 setCookie("m.coolapk.com", "uid=${PrefManager.uid}")
                 setCookie("m.coolapk.com", "username=${PrefManager.username}")
                 setCookie("m.coolapk.com", "token=${PrefManager.token}")
-                if (isLogin) {
-                    setCookie("https://www.coolapk.com", "DID=${PrefManager.SZLMID}; Domain=.coolapk.com; Path=/")
-                    setCookie("https://www.coolapk.com", "forward=https://www.coolapk.com; Domain=.coolapk.com; Path=/")
-                    setCookie("https://www.coolapk.com", "displayVersion=v14; Domain=.coolapk.com; Path=/")
-                }
             }
             it.apply {
                 setDownloadListener { url, userAgent, contentDisposition, mimetype, _ ->
