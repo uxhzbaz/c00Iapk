@@ -85,7 +85,7 @@ rikkax-material = { module = "dev.rikka.rikkax.material:material", version.ref =
 rikkax-material-preference = { module = "dev.rikka.rikkax.material:material-preference", version.ref = "material-preference" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
-sketch-gif = { module = "com.github.panpf.sketch:sketch-gif", version.ref = "sketch-gif" }
+sketch-gif = { module = "io.github.panpf.sketch:sketch-gif", version.ref = "sketch-gif" }
 utilcode = { module = "com.blankj:utilcode", version.ref = "utilcode" }
 zhaobozhen-libraries-utils = { module = "com.github.zhaobozhen.libraries:utils", version.ref = "utils" }
 
