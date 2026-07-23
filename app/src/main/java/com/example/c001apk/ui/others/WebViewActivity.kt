@@ -27,8 +27,8 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
-import com.example.c001apk.R
 import com.example.c001apk.BuildConfig
+import com.example.c001apk.R
 import com.example.c001apk.databinding.ActivityWebViewBinding
 import com.example.c001apk.ui.base.BaseActivity
 import com.example.c001apk.ui.main.MainActivity
@@ -42,7 +42,6 @@ import com.google.android.material.snackbar.Snackbar
 import java.net.URISyntaxException
 import java.net.URLDecoder
 import kotlin.system.exitProcess
-
 
 class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
 
@@ -134,6 +133,7 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                 setCookie("m.coolapk.com", "uid=${PrefManager.uid}")
                 setCookie("m.coolapk.com", "username=${PrefManager.username}")
                 setCookie("m.coolapk.com", "token=${PrefManager.token}")
+                flush()
             }
             it.apply {
                 setDownloadListener { url, userAgent, contentDisposition, mimetype, _ ->
@@ -270,12 +270,34 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                         }
                         return super.shouldOverrideUrlLoading(webView, request)
                     }
+
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        super.onPageFinished(view, url)
+                        view?.evaluateJavascript(
+                            "javascript:(function(){" +
+                            "if(window.eruda) return;" +
+                            "var s=document.createElement('script');" +
+                            "s.src='https://cdn.jsdelivr.net/npm/eruda';" +
+                            "document.body.appendChild(s);" +
+                            "s.onload=function(){eruda.init()}" +
+                            "})()",
+                            null
+                        )
+                    }
                 }
                 webChromeClient = object : WebChromeClient() {
+                    override fun onConsoleMessage(consoleMessage: android.webkit.ConsoleMessage?): Boolean {
+                        consoleMessage?.let {
+                            Log.d("WebViewConsole", "${it.message()} -- line: ${it.lineNumber()}")
+                        }
+                        return true
+                    }
+
                     override fun onCloseWindow(window: WebView?) {
                         super.onCloseWindow(window)
                         finish()
                     }
+
                     override fun onProgressChanged(view: WebView?, newProgress: Int) {
                         if (newProgress == 100) {
                             binding.progressBar.isVisible = false
@@ -294,7 +316,6 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
             }
         }
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.webview_menu, menu)
@@ -334,17 +355,16 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                     Toast.makeText(this@WebViewActivity, "清除缓存成功", Toast.LENGTH_SHORT).show()
                 }
             }
-
         }
         return true
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK && webView?.canGoBack() == true) {
-            webView?.goBack() //返回上个页面
+            webView?.goBack()
             return true
         }
-        return super.onKeyDown(keyCode, event) //退出H5界面
+        return super.onKeyDown(keyCode, event)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -376,5 +396,4 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
         super.onDestroy()
         exitProcess(0)
     }
-
 }
