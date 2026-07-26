@@ -265,11 +265,17 @@ class NetworkRepo @Inject constructor(
         return suspendCoroutine { continuation ->
             enqueue(object : Callback<T> {
                 override fun onResponse(call: Call<T>, response: Response<T>) {
-                    val body = response.body()
-                    if (body != null) continuation.resume(body)
-                    else continuation.resumeWithException(
-                        RuntimeException("response body is null")
-                    )
+                    if (response.isSuccessful) {
+                        response.body()?.let { continuation.resume(it) }
+                            ?: continuation.resumeWithException(
+                                RuntimeException("empty body, code=${response.code()}")
+                            )
+                    } else {
+                        val err = response.errorBody()?.string()
+                        continuation.resumeWithException(
+                            RuntimeException("http ${response.code()} ${response.message()}: $err")
+                        )
+                    }
                 }
 
                 override fun onFailure(call: Call<T>, t: Throwable) {
