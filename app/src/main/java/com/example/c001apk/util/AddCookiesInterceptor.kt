@@ -16,7 +16,8 @@ import java.io.IOException
 object AddCookiesInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
-        val builder: Request.Builder = chain.request().newBuilder()
+        val request = chain.request()
+        val builder: Request.Builder = request.newBuilder()
         val deviceCode = TokenDeviceUtils.getLastingDeviceCode()
         val token = deviceCode.getTokenV2()
         builder.apply {
@@ -34,7 +35,8 @@ object AddCookiesInterceptor : Interceptor {
             addHeader("X-App-Channel", CHANNEL)
             addHeader("X-App-Mode", MODE)
             addHeader("X-App-Supported", PrefManager.VERSION_CODE)
-            addHeader("Content-Type", "application/x-www-form-urlencoded")
+            if (request.method != "GET")
+                addHeader("Content-Type", "application/x-www-form-urlencoded")
             if (PrefManager.isLogin)
                 addHeader(
                     "Cookie",
