@@ -52,6 +52,13 @@ class MainViewModel @Inject constructor(
                 .collect { result ->
                     val response = result.getOrNull()
                     response?.let {
+                        try {
+                            val session = response.headers().values("Set-Cookie").firstOrNull()
+                            session?.substringBefore(";")?.let { CookieUtil.SESSID = it }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+
                         response.body()?.let {
                             if (response.body()?.data?.token != null) {
                                 response.body()?.data?.let { login ->
@@ -77,19 +84,8 @@ class MainViewModel @Inject constructor(
                                 PrefManager.userAvatar = ""
                             }
 
-                            try {
-                                val headers = response.headers()
-                                val cookies = headers.values("Set-Cookie")
-                                val session = cookies[0]
-                                val sessionID = session.substring(0, session.indexOf(";"))
-                                CookieUtil.SESSID = sessionID
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-
                             if (CookieUtil.badge != 0)
                                 setBadge.postValue(Event(true))
-
                         }
                     }
                 }
