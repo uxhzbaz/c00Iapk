@@ -38,7 +38,7 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
                         startActivity(
                             Intent(
                                 Intent.ACTION_VIEW,
-                                Uri.parse("https://github.com/bggRGjQaUbCoE/c001apk/issues")
+                                Uri.parse("https://github.com/uxhzbaz/c00Iapk/issues")
                             )
                         )
                     } catch (e: ActivityNotFoundException) {
@@ -69,7 +69,7 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
             binding.designAboutInfo.text = HtmlCompat.fromHtml(
                 getString(
                     R.string.about_view_source_code,
-                    "<b><a href=\"https://github.com/bggRGjQaUbCoE/c001apk\">GitHub</a></b>",
+                    "<b><a href=\"https://github.com/uxhzbaz/c00Iapk\">GitHub</a></b>",
                 ), HtmlCompat.FROM_HTML_MODE_LEGACY
             )
             binding.designAboutVersion.text = java.lang.String.format(
