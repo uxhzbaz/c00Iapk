@@ -418,7 +418,6 @@
             android:name=".ui.appupdate.AppUpdateActivity"
             android:exported="false" />
         <activity
-            <activity
             android:name=".ui.messagedetail.MessageActivity"
             android:exported="false" />
         <activity
