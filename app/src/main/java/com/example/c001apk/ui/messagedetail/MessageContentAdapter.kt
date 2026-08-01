@@ -10,9 +10,10 @@ import com.example.c001apk.adapter.ItemListener
 import com.example.c001apk.databinding.ItemMessageContentBinding
 import com.example.c001apk.databinding.ItemMessageUserBinding
 import com.example.c001apk.logic.model.MessageResponse
+import com.example.c001apk.ui.chat.ChatActivity
 import com.example.c001apk.ui.feed.FeedActivity
 import com.example.c001apk.util.IntentUtil
-
+import com.example.c001apk.util.PrefManager
 
 class MessageContentAdapter(
     private val type: String,
@@ -25,7 +26,29 @@ class MessageContentAdapter(
         val listener: ItemListener
     ) :
         RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            if (type == "list") {
+                itemView.setOnClickListener {
+                    val data = boundData ?: return@setOnClickListener
+                    val myUid = PrefManager.uid.toLongOrNull()
+                    val otherUid = data.uid.toLongOrNull()
+                    val ukey = if (myUid != null && otherUid != null)
+                        "${minOf(myUid, otherUid)}_${maxOf(myUid, otherUid)}"
+                    else "${PrefManager.uid}_${data.uid}"
+                    IntentUtil.startActivity<ChatActivity>(itemView.context) {
+                        putExtra("ukey", ukey)
+                        putExtra("uid", data.uid)
+                        putExtra("username", data.username)
+                    }
+                }
+            }
+        }
+
+        private var boundData: MessageResponse.Data? = null
+
         fun bind(data: MessageResponse.Data) {
+            boundData = data
             binding.setVariable(BR.type, type)
             binding.setVariable(BR.data, data)
             binding.setVariable(BR.listener, listener)
