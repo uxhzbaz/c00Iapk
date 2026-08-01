@@ -1,5 +1,6 @@
 package com.example.c001apk.logic.network
 
+import com.example.c001apk.logic.model.ChatResponse
 import com.example.c001apk.logic.model.CheckCountResponse
 import com.example.c001apk.logic.model.CheckResponse
 import com.example.c001apk.logic.model.CreateFeedResponse
@@ -210,6 +211,20 @@ interface ApiService {
         @Query("page") page: Int,
         @Query("lastItem") lastItem: String?
     ): Call<MessageResponse>
+
+    @GET("/v6/message/chat")
+    fun getChatMessage(
+        @Query("ukey") ukey: String,
+        @Query("page") page: Int,
+        @Query("lastItem") lastItem: String?
+    ): Call<ChatResponse>
+
+    @POST("/v6/message/send")
+    @FormUrlEncoded
+    fun sendMessage(
+        @FieldMap data: HashMap<String, String>,
+        @Query("uid") uid: String
+    ): Call<ChatResponse>
 
     @POST
     fun postFollowUnFollow(
