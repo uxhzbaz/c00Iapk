@@ -418,7 +418,11 @@
             android:name=".ui.appupdate.AppUpdateActivity"
             android:exported="false" />
         <activity
+            <activity
             android:name=".ui.messagedetail.MessageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.chat.ChatActivity"
             android:exported="false" />
         <activity
             android:name=".ui.dyh.DyhActivity"
