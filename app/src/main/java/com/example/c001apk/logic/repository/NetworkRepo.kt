@@ -178,6 +178,14 @@ class NetworkRepo @Inject constructor(
         Result.success(apiService.getMessage(url, page, lastItem).await())
     }
 
+    suspend fun getChatMessage(ukey: String, page: Int, lastItem: String?) = fire {
+        Result.success(apiService.getChatMessage(ukey, page, lastItem).await())
+    }
+
+    suspend fun sendMessage(uid: String, message: String) = fire {
+        Result.success(apiService.sendMessage(hashMapOf("message" to message), uid).await())
+    }
+
     suspend fun postFollowUnFollow(url: String, uid: String) = fire {
         Result.success(apiService.postFollowUnFollow(url, uid).await())
     }
