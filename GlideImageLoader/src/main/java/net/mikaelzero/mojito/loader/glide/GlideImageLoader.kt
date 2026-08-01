@@ -1,9 +1,10 @@
 package net.mikaelzero.mojito.loader.glide
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import net.mikaelzero.mojito.loader.ImageLoader
@@ -11,7 +12,11 @@ import okhttp3.OkHttpClient
 import java.io.File
 import kotlin.concurrent.thread
 
-open class GlideImageLoader private constructor(val context: Context, okHttpClient: OkHttpClient?) : ImageLoader {
+open class GlideImageLoader private constructor(
+    val context: Context,
+    okHttpClient: OkHttpClient?,
+    private val userAgent: String?
+) : ImageLoader {
     private val requestManager = Glide.with(context)
     private val flyingRequestTargets: MutableMap<Int, ImageDownloadTarget> = hashMapOf()
 
@@ -73,17 +78,19 @@ open class GlideImageLoader private constructor(val context: Context, okHttpClie
     }
 
     private fun downloadImageInto(uri: Uri, target: Target<File>, onlyRetrieveFromCache: Boolean) {
+        val source = if (userAgent != null)
+            GlideUrl(uri.toString(), LazyHeaders.Builder().addHeader("User-Agent", userAgent).build())
+        else uri
         requestManager
             .downloadOnly()
-            .load(uri)
+            .load(source)
             .onlyRetrieveFromCache(onlyRetrieveFromCache)
             .into(target)
     }
 
     companion object {
         @JvmOverloads
-        fun with(context: Context, okHttpClient: OkHttpClient? = null): GlideImageLoader {
-            return GlideImageLoader(context, okHttpClient)
+        fun with(context: Context, okHttpClient: OkHttpClient? = null, userAgent: String? = null): GlideImageLoader {
+            return GlideImageLoader(context, okHttpClient, userAgent)
         }
     }
-}
