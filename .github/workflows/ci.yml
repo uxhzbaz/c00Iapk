@@ -59,8 +59,16 @@ jobs:
       - name: Build release
         id: buildRelease
         run: |
-          ./gradlew :app:assembleRelease
+          ./gradlew :app:assembleRelease --stacktrace --info
           echo "releaseName=$(ls app/build/outputs/apk/release/*.apk | awk -F '(/|\\.apk)' '{print $6}')" >> $GITHUB_OUTPUT
+
+      - name: Dump manifest merger report on failure
+        if: failure() && steps.buildRelease.outcome == 'failure'
+        run: |
+          echo "---- merged manifest ----"
+          cat app/build/intermediates/merged_manifest/release/AndroidManifest.xml 2>/dev/null || true
+          echo "---- manifest merger blame report ----"
+          find app/build/outputs/logs -iname "manifest-merger-*report.txt" -exec cat {} \;
 
       - name: Upload release
         if: success()
