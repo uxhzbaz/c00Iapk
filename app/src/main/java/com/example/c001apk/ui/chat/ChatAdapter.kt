@@ -15,7 +15,7 @@ import com.example.c001apk.logic.model.ChatResponse
 import com.example.c001apk.util.ImageUtil
 import com.example.c001apk.util.PrefManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import net.mikaelzero.mojito.Mojito
+import net.mikaelzero.mojito.ext.mojito
 
 class ChatAdapter(
     private val onDelete: (String) -> Unit,
@@ -47,9 +47,7 @@ class ChatAdapter(
                     )
                     Glide.with(bubbleImage).load(glideUrl).into(bubbleImage)
                     bubbleImage.setOnClickListener {
-                        Mojito.start(root.context) {
-                            urls(listOf(data.messagePic), listOf(data.messagePic))
-                        }
+                        bubbleImage.mojito(data.messagePic)
                     }
                 } else {
                     bubbleImage.setImageDrawable(null)
