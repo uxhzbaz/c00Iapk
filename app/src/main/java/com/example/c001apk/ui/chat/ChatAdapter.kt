@@ -1,8 +1,10 @@
 package com.example.c001apk.ui.chat
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,7 +14,7 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.example.c001apk.constant.Constants.USER_AGENT
 import com.example.c001apk.databinding.ItemChatBinding
 import com.example.c001apk.logic.model.ChatResponse
-import androidx.fragment.app.FragmentActivity
+import com.example.c001apk.util.DateUtils
 import com.example.c001apk.util.ImageUtil
 import com.example.c001apk.util.PrefManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -42,16 +44,20 @@ class ChatAdapter(
             ImageUtil.showIMG(avatar, data.fromUserAvatar)
             bubbleTime.text = DateUtils.fromToday(data.dateline)
 
-            bubbleImage.isVisible = !data.messagePic.isNullOrEmpty()
-            if (!data.messagePic.isNullOrEmpty()) {
-                if (data.messagePic.startsWith("http")) {
+            bubbleText.isVisible = !data.message.isNullOrEmpty()
+            bubbleText.text = data.message
+
+            val pic = data.messagePic
+            bubbleImage.isVisible = !pic.isNullOrEmpty()
+            if (!pic.isNullOrEmpty()) {
+                if (pic.startsWith("http")) {
                     val glideUrl = GlideUrl(
-                        data.messagePic,
+                        pic,
                         LazyHeaders.Builder().addHeader("User-Agent", USER_AGENT).build()
                     )
                     Glide.with(bubbleImage).load(glideUrl).into(bubbleImage)
                     bubbleImage.setOnClickListener {
-                        bubbleImage.mojito(data.messagePic) {
+                        bubbleImage.mojito(pic) {
                             setOnMojitoListener(object : SimpleMojitoViewCallback() {
                                 override fun onLongClick(
                                     fragmentActivity: FragmentActivity?,
@@ -61,21 +67,22 @@ class ChatAdapter(
                                     position: Int
                                 ) {
                                     if (fragmentActivity != null) {
-                                        ImageUtil.showSaveImgDialog(
-                                            fragmentActivity,
-                                            data.messagePic,
-                                            null
-                                        )
+                                        ImageUtil.showSaveImgDialog(fragmentActivity, pic, null)
                                     }
                                 }
                             })
                         }
                     }
+                } else {
+                    bubbleImage.setImageDrawable(null)
+                    bubbleImage.setOnClickListener(null)
+                    onResolveImage(data.id.orEmpty())
+                }
             }
 
             root.setOnLongClickListener {
                 MaterialAlertDialogBuilder(root.context)
-                    .setItems(arrayOf("删除")) { _, _ -> onDelete(data.id) }
+                    .setItems(arrayOf("删除")) { _, _ -> onDelete(data.id.orEmpty()) }
                     .show()
                 true
             }
@@ -89,5 +96,4 @@ class ChatAdapter(
         override fun areContentsTheSame(old: ChatResponse.Data, new: ChatResponse.Data) =
             old == new
     }
-}
 }
