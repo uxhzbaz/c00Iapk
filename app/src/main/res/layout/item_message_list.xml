@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="data"
+            type="com.example.c001apk.logic.model.MessageResponse.Data" />
+
+        <variable
+            name="listener"
+            type="com.example.c001apk.adapter.ItemListener" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardBackgroundColor="@color/home_card_background_color"
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/avatar"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@color/cover"
+                android:foreground="@drawable/selector_bg_avatar"
+                android:onClick="@{(view) -> listener.onViewUser(view, data.messageUid)}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:setImage="@{data.messageUserAvatar}"
+                app:shapeAppearance="@style/circleImageStyle" />
+
+            <TextView
+                android:id="@+id/uname"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{data.messageUsername}"
+                app:layout_constraintEnd_toStartOf="@id/date"
+                app:layout_constraintStart_toEndOf="@id/avatar"
+                app:layout_constraintTop_toTopOf="@id/avatar" />
+
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/avatar" />
+
+            <TextView
+                android:id="@+id/preview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toStartOf="@id/badge"
+                app:layout_constraintStart_toEndOf="@id/avatar"
+                app:layout_constraintTop_toBottomOf="@id/uname" />
+
+            <com.example.c001apk.view.BadgeTextView
+                android:id="@+id/badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?colorPrimary"
+                android:gravity="center"
+                android:lines="1"
+                android:textColor="?colorOnPrimary"
+                android:textSize="12sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/preview"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/preview" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>
