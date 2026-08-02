@@ -75,7 +75,49 @@ class ChatActivity : BaseActivity<ActivityChatBinding>() {
         initObserve()
 
         viewModel.fetchData(true)
+        viewModel.checkBlocked(uid)
     }
+
+    private var menuBlock: MenuItem? = null
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.chat_menu, menu)
+        menuBlock = menu.findItem(R.id.block)
+        viewModel.isBlocked.observe(this) {
+            menuBlock?.title = if (it) "移除黑名单" else "屏蔽"
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.check -> {
+                IntentUtil.startActivity<UserActivity>(this) {
+                    putExtra("id", uid)
+                }
+            }
+
+            R.id.block -> {
+                val isBlocked = menuBlock?.title.toString() == "移除黑名单"
+                MaterialAlertDialogBuilder(this).apply {
+                    setTitle("确定将 $username ${menuBlock?.title}？")
+                    setNegativeButton(android.R.string.cancel, null)
+                    setPositiveButton(android.R.string.ok) { _, _ ->
+                        if (isBlocked) viewModel.deleteUid(uid) else viewModel.saveUid(uid)
+                    }
+                    show()
+                }
+            }
+
+            R.id.report -> {
+                IntentUtil.startActivity<WebViewActivity>(this) {
+                    putExtra("url", "https://m.coolapk.com/mp/do?c=user&m=report&id=$uid")
+                }
+            }
+        }
+        return true
+    }
+}
 
     private fun initList() {
         chatAdapter = ChatAdapter(
