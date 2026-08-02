@@ -22,7 +22,8 @@ import kotlinx.coroutines.launch
 class ChatViewModel @AssistedInject constructor(
     @Assisted val ukey: String,
     private val recentEmojiRepo: RecentEmojiRepo,
-    private val networkRepo: NetworkRepo
+    private val networkRepo: NetworkRepo,
+    private val blackListRepo: com.example.c001apk.logic.repository.BlackListRepo
 ) : ViewModel() {
 
     @AssistedFactory
@@ -90,7 +91,28 @@ class ChatViewModel @AssistedInject constructor(
         }
     }
 
-    private val resolvingImage = HashSet<String>()
+    val isBlocked = MutableLiveData<Boolean>()
+    fun checkBlocked(uid: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            isBlocked.postValue(blackListRepo.checkUid(uid))
+        }
+    }
+
+    fun saveUid(uid: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            blackListRepo.saveUid(uid)
+            isBlocked.postValue(true)
+        }
+    }
+
+    fun deleteUid(uid: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            blackListRepo.deleteUid(uid)
+            isBlocked.postValue(false)
+        }
+    }
+
+    private var resolvingImage = HashSet<String>()
     fun resolveImageUrl(id: String) {
         if (!resolvingImage.add(id)) return
         viewModelScope.launch(Dispatchers.IO) {
