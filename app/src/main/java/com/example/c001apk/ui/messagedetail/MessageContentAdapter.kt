@@ -2,18 +2,23 @@ package com.example.c001apk.ui.messagedetail
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.c001apk.BR
 import com.example.c001apk.adapter.ItemListener
 import com.example.c001apk.databinding.ItemMessageContentBinding
+import com.example.c001apk.databinding.ItemMessageListBinding
 import com.example.c001apk.databinding.ItemMessageUserBinding
 import com.example.c001apk.logic.model.MessageResponse
 import com.example.c001apk.ui.chat.ChatActivity
 import com.example.c001apk.ui.feed.FeedActivity
+import com.example.c001apk.util.DateUtils
 import com.example.c001apk.util.IntentUtil
 import com.example.c001apk.util.PrefManager
+import com.example.c001apk.util.Utils.richToString
+
 
 class MessageContentAdapter(
     private val type: String,
@@ -26,35 +31,46 @@ class MessageContentAdapter(
         val listener: ItemListener
     ) :
         RecyclerView.ViewHolder(binding.root) {
-
-        init {
-            if (type == "list") {
-                itemView.setOnClickListener {
-                    val data = boundData ?: return@setOnClickListener
-                    val myUid = PrefManager.uid.toLongOrNull()
-                    val otherUid = data.uid.toLongOrNull()
-                    val ukey = if (myUid != null && otherUid != null)
-                        "${minOf(myUid, otherUid)}_${maxOf(myUid, otherUid)}"
-                    else "${PrefManager.uid}_${data.uid}"
-                    IntentUtil.startActivity<ChatActivity>(itemView.context) {
-                        putExtra("ukey", ukey)
-                        putExtra("uid", data.uid)
-                        putExtra("username", data.username)
-                    }
-                }
-            }
-        }
-
-        private var boundData: MessageResponse.Data? = null
-
         fun bind(data: MessageResponse.Data) {
-            boundData = data
             binding.setVariable(BR.type, type)
             binding.setVariable(BR.data, data)
             binding.setVariable(BR.listener, listener)
             binding.executePendingBindings()
         }
 
+    }
+
+    class ListViewHolder(
+        val binding: ItemMessageListBinding,
+        val listener: ItemListener
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.setVariable(BR.listener, listener)
+            itemView.setOnClickListener {
+                val data = binding.data ?: return@setOnClickListener
+                val myUid = PrefManager.uid.toLongOrNull()
+                val otherUid = data.messageUid?.toLongOrNull()
+                val ukey = data.ukey ?: if (myUid != null && otherUid != null)
+                    "${minOf(myUid, otherUid)}_${maxOf(myUid, otherUid)}"
+                else "${PrefManager.uid}_${data.messageUid}"
+                IntentUtil.startActivity<ChatActivity>(itemView.context) {
+                    putExtra("ukey", ukey)
+                    putExtra("uid", data.messageUid)
+                    putExtra("username", data.messageUsername)
+                }
+            }
+        }
+
+        fun bind(data: MessageResponse.Data) {
+            binding.data = data
+            binding.uname.text = data.messageUsername
+            binding.date.text = DateUtils.fromToday(data.dateline)
+            binding.preview.text = data.message.richToString()
+            binding.badge.isVisible = (data.unreadNum ?: 0) > 0
+            binding.badge.text = data.unreadNum?.toString().orEmpty()
+            binding.executePendingBindings()
+        }
     }
 
     class MessageViewHolder(
@@ -96,13 +112,21 @@ class MessageContentAdapter(
                 )
             }
 
-
             1 -> {
                 UserViewHolder(
                     ItemMessageUserBinding.inflate(
                         LayoutInflater.from(parent.context), parent,
                         false
                     ), type, listener
+                )
+            }
+
+            2 -> {
+                ListViewHolder(
+                    ItemMessageListBinding.inflate(
+                        LayoutInflater.from(parent.context), parent,
+                        false
+                    ), listener
                 )
             }
 
@@ -118,7 +142,7 @@ class MessageContentAdapter(
             "atCommentMe" -> 0
             "feedLike" -> 0
             "contactsFollow" -> 1
-            "list" -> 1
+            "list" -> 2
             else -> throw IllegalArgumentException("invalid type")
         }
     }
@@ -130,6 +154,9 @@ class MessageContentAdapter(
                 holder.bind(currentList[position])
             }
 
+            is ListViewHolder -> {
+                holder.bind(currentList[position])
+            }
 
             is MessageViewHolder -> {
                 holder.bind(currentList[position])
