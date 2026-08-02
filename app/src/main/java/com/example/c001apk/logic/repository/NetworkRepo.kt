@@ -182,6 +182,11 @@ class NetworkRepo @Inject constructor(
         Result.success(apiService.getChatMessage(ukey, page, lastItem).await())
     }
 
+    suspend fun getImageUrl(id: String) = fire {
+        val response = apiServiceNoRedirect.getImageUrl(id).response()
+        Result.success(response.headers()["Location"])
+    }
+
     suspend fun sendMessage(data: HashMap<String, String>, uid: String) = fire {
         Result.success(apiService.sendMessage(data, uid).await())
     }
