@@ -25,6 +25,22 @@
         android:orientation="horizontal"
         android:padding="8dp">
 
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_image"
+            android:contentDescription="@null" />
+
+        <ImageButton
+            android:id="@+id/emojiButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_emoji"
+            android:contentDescription="@null" />
+
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/inputEdit"
             android:layout_width="0dp"
@@ -41,5 +57,18 @@
             android:src="@drawable/ic_send"
             android:contentDescription="@null" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/emojiIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:orientation="horizontal"
+        android:visibility="gone" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/emojiPanel"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:visibility="gone" />
 
 </LinearLayout>
