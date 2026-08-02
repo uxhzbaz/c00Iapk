@@ -20,10 +20,12 @@ import com.example.c001apk.ui.feed.reply.emoji.EmojiPagerAdapter
 import com.example.c001apk.util.EmojiUtils
 import com.example.c001apk.util.ImageUtil.getImageDimensionsAndMD5
 import com.example.c001apk.util.ImageUtil.toHex
+import androidx.lifecycle.lifecycleScope
 import com.example.c001apk.util.dp
 import com.example.c001apk.util.makeToast
 import com.example.c001apk.util.ossUpload
 import com.example.c001apk.view.EmojiTextWatcher
+import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -145,7 +147,11 @@ class ChatActivity : BaseActivity<ActivityChatBinding>() {
             override fun onPageSelected(position: Int) {
                 for (i in 0 until binding.emojiIndicator.childCount) {
                     (binding.emojiIndicator.getChildAt(i) as? TextView)?.setTextColor(
-                        if (i == position) getColor(R.color.md_theme_primary)
+                        if (i == position)
+                            MaterialColors.getColor(
+                                this@ChatActivity,
+                                com.google.android.material.R.attr.colorPrimary, 0
+                            )
                         else getColor(android.R.color.darker_gray)
                     )
                 }
