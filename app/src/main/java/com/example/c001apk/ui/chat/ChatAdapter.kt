@@ -13,7 +13,8 @@ import com.example.c001apk.util.PrefManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class ChatAdapter(
-    private val onDelete: (String) -> Unit
+    private val onDelete: (String) -> Unit,
+    private val onResolveImage: (String) -> Unit
 ) : ListAdapter<ChatResponse.Data, ChatAdapter.ViewHolder>(DiffCallback()) {
 
     class ViewHolder(val binding: ItemChatBinding) : RecyclerView.ViewHolder(binding.root)
@@ -37,9 +38,15 @@ class ChatAdapter(
 
             bubbleImage.isVisible = !data.messagePic.isNullOrEmpty()
             if (!data.messagePic.isNullOrEmpty()) {
-                ImageUtil.showIMG(bubbleImage, data.messagePic)
-                bubbleImage.setOnClickListener {
-                    ImageUtil.startBigImgViewSimple(bubbleImage, data.messagePic)
+                if (data.messagePic.startsWith("http")) {
+                    ImageUtil.showIMG(bubbleImage, data.messagePic)
+                    bubbleImage.setOnClickListener {
+                        ImageUtil.startBigImgViewSimple(bubbleImage, data.messagePic)
+                    }
+                } else {
+                    bubbleImage.setImageDrawable(null)
+                    bubbleImage.setOnClickListener(null)
+                    onResolveImage(data.id)
                 }
             }
 
