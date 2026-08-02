@@ -94,7 +94,7 @@ class MessageThirdAdapter : RecyclerView.Adapter<MessageThirdAdapter.ThirdViewHo
         return ThirdViewHolder(binding)
     }
 
-    override fun getItemCount() = 4
+    override fun getItemCount() = messTitle.size
 
     override fun onBindViewHolder(holder: ThirdViewHolder, position: Int) {
         holder.bind()
