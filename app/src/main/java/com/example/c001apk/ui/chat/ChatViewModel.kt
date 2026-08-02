@@ -62,9 +62,10 @@ class ChatViewModel @AssistedInject constructor(
                     val feed = result.getOrNull()
                     if (feed?.data != null) {
                         val old = if (isRefresh) emptyList() else chatListData.value.orEmpty()
+                        val messages = feed.data.filter { it.entityType == "message" }
                         lastItem = feed.data.lastOrNull()?.id
                         if (feed.data.isEmpty()) isEnd = true else page++
-                        chatListData.postValue(old + feed.data)
+                        chatListData.postValue(old + messages)
                     } else {
                         toastText.postValue(Event(feed?.message ?: "加载失败"))
                     }
