@@ -90,3 +90,4 @@ class ChatAdapter(
             old == new
     }
 }
+}
