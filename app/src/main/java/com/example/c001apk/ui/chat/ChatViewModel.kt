@@ -89,6 +89,24 @@ class ChatViewModel @AssistedInject constructor(
         }
     }
 
+    private val resolvingImage = HashSet<String>()
+    fun resolveImageUrl(id: String) {
+        if (!resolvingImage.add(id)) return
+        viewModelScope.launch(Dispatchers.IO) {
+            networkRepo.getImageUrl(id)
+                .collect { result ->
+                    val url = result.getOrNull()
+                    if (!url.isNullOrEmpty()) {
+                        chatListData.postValue(
+                            chatListData.value.orEmpty().map {
+                                if (it.id == id) it.copy(messagePic = url) else it
+                            }
+                        )
+                    }
+                }
+        }
+    }
+
     fun deleteMessage(id: String) {
         viewModelScope.launch(Dispatchers.IO) {
             networkRepo.postDelete("/v6/message/delete", id).collect {
