@@ -95,3 +95,4 @@ open class GlideImageLoader private constructor(
             return GlideImageLoader(context, okHttpClient, userAgent)
         }
     }
+}
