@@ -63,7 +63,9 @@ class ChatActivity : BaseActivity<ActivityChatBinding>() {
         super.onCreate(savedInstanceState)
         setSupportActionBar(binding.toolBar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.toolBar.title = username
+        val displayName = username.ifBlank { "私信" }
+        binding.toolBar.title = displayName
+        supportActionBar?.title = displayName
         binding.toolBar.setNavigationOnClickListener { finish() }
 
         initList()
