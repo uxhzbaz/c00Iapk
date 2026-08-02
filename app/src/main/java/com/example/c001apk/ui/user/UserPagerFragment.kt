@@ -11,6 +11,7 @@ import com.example.c001apk.R
 import com.example.c001apk.databinding.BaseUserPageBinding
 import com.example.c001apk.databinding.BaseViewUserBinding
 import com.example.c001apk.ui.base.BaseFragment
+import com.example.c001apk.ui.chat.ChatActivity
 import com.example.c001apk.ui.others.WebViewActivity
 import com.example.c001apk.ui.search.SearchActivity
 import com.example.c001apk.util.DateUtils
@@ -115,6 +116,10 @@ class UserPagerFragment : BaseFragment<BaseUserPageBinding>() {
             val menuShare = menu?.findItem(R.id.share)
             menuShare?.title = getMenuTitle(menuShare?.title)
 
+            val menuMessage = menu?.findItem(R.id.message)
+            menuMessage?.title = getMenuTitle(menuMessage?.title)
+            menuMessage?.isVisible = PrefManager.isLogin && viewModel.uid != PrefManager.uid
+
             val menuReport = menu?.findItem(R.id.report)
             menuReport?.title = getMenuTitle(menuReport?.title)
             menuReport?.isVisible = PrefManager.isLogin
@@ -153,6 +158,19 @@ class UserPagerFragment : BaseFragment<BaseUserPageBinding>() {
                             else
                                 "/v6/user/follow"
                         )
+                    }
+
+                    R.id.message -> {
+                        val myUid = PrefManager.uid.toLongOrNull()
+                        val otherUid = viewModel.uid.toLongOrNull()
+                        val ukey = if (myUid != null && otherUid != null)
+                            "${minOf(myUid, otherUid)}_${maxOf(myUid, otherUid)}"
+                        else "${PrefManager.uid}_${viewModel.uid}"
+                        IntentUtil.startActivity<ChatActivity>(requireContext()) {
+                            putExtra("ukey", ukey)
+                            putExtra("uid", viewModel.uid)
+                            putExtra("username", viewModel.userData?.username)
+                        }
                     }
 
                     R.id.search -> {
