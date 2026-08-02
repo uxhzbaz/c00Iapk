@@ -3,6 +3,8 @@ package com.example.c001apk.ui.chat
 import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
+import android.view.Menu
+import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.activity.result.PickVisualMediaRequest
@@ -15,9 +17,10 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.c001apk.R
 import com.example.c001apk.databinding.ActivityChatBinding
 import com.example.c001apk.logic.model.OSSUploadPrepareModel
-import com.example.c001apk.ui.base.BaseActivity
-import com.example.c001apk.ui.feed.reply.emoji.EmojiPagerAdapter
-import com.example.c001apk.util.EmojiUtils
+import com.example.c001apk.view.EmojiTextWatcher
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import com.example.c001apk.util.ImageUtil.getImageDimensionsAndMD5
 import com.example.c001apk.util.ImageUtil.toHex
 import androidx.lifecycle.lifecycleScope
@@ -117,7 +120,6 @@ class ChatActivity : BaseActivity<ActivityChatBinding>() {
         }
         return true
     }
-}
 
     private fun initList() {
         chatAdapter = ChatAdapter(
@@ -296,3 +298,4 @@ class ChatActivity : BaseActivity<ActivityChatBinding>() {
             }
         }
     }
+}
