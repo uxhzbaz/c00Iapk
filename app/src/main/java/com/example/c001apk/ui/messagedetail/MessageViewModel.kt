@@ -82,12 +82,12 @@ class MessageViewModel @AssistedInject constructor(
                             if (isRefreshing) messageList.clear()
                             if (isRefreshing || isLoadMore) {
                                 feed.data.forEach {
-                                    if (it.entityType in listOf(
-                                            "feed", "feed_reply", "notification"
-                                        )
+                                    val isValidType = type == "list" ||
+                                            it.entityType in listOf(
+                                        "feed", "feed_reply", "notification"
                                     )
-                                        if (!blackListRepo.checkUid(it.uid))
-                                            messageList.add(it)
+                                    if (isValidType && !blackListRepo.checkUid(it.uid))
+                                        messageList.add(it)
                                 }
                             }
                             page++
