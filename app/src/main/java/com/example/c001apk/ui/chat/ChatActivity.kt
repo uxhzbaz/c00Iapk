@@ -76,7 +76,10 @@ class ChatActivity : BaseActivity<ActivityChatBinding>() {
     }
 
     private fun initList() {
-        chatAdapter = ChatAdapter { id -> viewModel.deleteMessage(id) }
+        chatAdapter = ChatAdapter(
+            onDelete = { id -> viewModel.deleteMessage(id) },
+            onResolveImage = { id -> viewModel.resolveImageUrl(id) }
+        )
         binding.recyclerView.layoutManager = layoutManager
         binding.recyclerView.adapter = chatAdapter
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
