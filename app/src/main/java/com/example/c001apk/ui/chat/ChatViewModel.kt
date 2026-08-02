@@ -1,12 +1,18 @@
 package com.example.c001apk.ui.chat
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.c001apk.logic.repository.NetworkRepo
 import com.example.c001apk.logic.model.ChatResponse
+import com.example.c001apk.logic.model.OSSUploadPrepareModel
+import com.example.c001apk.logic.model.OSSUploadPrepareResponse
+import com.example.c001apk.logic.model.StringEntity
+import com.example.c001apk.logic.repository.NetworkRepo
+import com.example.c001apk.logic.repository.RecentEmojiRepo
 import com.example.c001apk.util.Event
+import com.google.gson.Gson
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -15,6 +21,7 @@ import kotlinx.coroutines.launch
 
 class ChatViewModel @AssistedInject constructor(
     @Assisted val ukey: String,
+    private val recentEmojiRepo: RecentEmojiRepo,
     private val networkRepo: NetworkRepo
 ) : ViewModel() {
 
@@ -65,16 +72,18 @@ class ChatViewModel @AssistedInject constructor(
         }
     }
 
-    fun sendMessage(uid: String, text: String) {
-        if (text.isBlank()) return
+    fun sendMessage(uid: String, text: String, pic: String? = null) {
+        if (text.isBlank() && pic.isNullOrEmpty()) return
+        val data = hashMapOf("message" to text)
+        if (!pic.isNullOrEmpty()) data["message_pic"] = pic
         viewModelScope.launch(Dispatchers.IO) {
-            networkRepo.sendMessage(uid, text)
+            networkRepo.sendMessage(data, uid)
                 .collect { result ->
-                    val data = result.getOrNull()
-                    if (!data?.message.isNullOrEmpty()) {
-                        toastText.postValue(Event(data!!.message!!))
-                    } else if (data?.data != null) {
-                        chatListData.postValue(chatListData.value.orEmpty() + data.data)
+                    val response = result.getOrNull()
+                    if (!response?.message.isNullOrEmpty()) {
+                        toastText.postValue(Event(response!!.message!!))
+                    } else if (response?.data != null) {
+                        chatListData.postValue(chatListData.value.orEmpty() + response.data)
                     }
                 }
         }
@@ -85,6 +94,45 @@ class ChatViewModel @AssistedInject constructor(
             networkRepo.postDelete("/v6/message/delete", id).collect {
                 chatListData.postValue(chatListData.value.orEmpty().filter { it.id != id })
             }
+        }
+    }
+
+    val recentEmojiLiveData: LiveData<List<StringEntity>> = recentEmojiRepo.loadAllListLive()
+
+    fun updateRecentEmoji(data: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (recentEmojiRepo.checkEmoji(data)) {
+                recentEmojiRepo.updateEmoji(data, System.currentTimeMillis())
+            } else {
+                if (recentEmojiLiveData.value?.size == 27)
+                    recentEmojiLiveData.value?.last()?.data?.let {
+                        recentEmojiRepo.updateEmoji(it, data, System.currentTimeMillis())
+                    }
+                else
+                    recentEmojiRepo.insertEmoji(StringEntity(data))
+            }
+        }
+    }
+
+    val uploadImage = MutableLiveData<Event<OSSUploadPrepareResponse.Data>>()
+    fun onPostOSSUploadPrepare(uid: String, imageList: List<OSSUploadPrepareModel>) {
+        val ossUploadPrepareData = hashMapOf(
+            "uploadBucket" to "message",
+            "uploadDir" to "message",
+            "is_anonymous" to "0",
+            "uploadFileList" to Gson().toJson(imageList),
+            "toUid" to uid
+        )
+        viewModelScope.launch(Dispatchers.IO) {
+            networkRepo.postOSSUploadPrepare(ossUploadPrepareData)
+                .collect { result ->
+                    val data = result.getOrNull()
+                    if (data?.message != null) {
+                        toastText.postValue(Event(data.message))
+                    } else if (data?.data != null) {
+                        uploadImage.postValue(Event(data.data))
+                    }
+                }
         }
     }
 }
