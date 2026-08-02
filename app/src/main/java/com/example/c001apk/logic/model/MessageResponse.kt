@@ -45,7 +45,12 @@ data class MessageResponse(
         val fromUserAvatar: String,
         val fromusername: String,
         val fromuid: String,
-        val note: String
+        val note: String,
+        val ukey: String?,
+        val messageUid: String?,
+        val messageUsername: String?,
+        val messageUserAvatar: String?,
+        val unreadNum: Int?
     )
 
     data class Feed(
