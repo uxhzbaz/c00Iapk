@@ -100,9 +100,12 @@ class MessageViewModel @Inject constructor(
                                 messageList.clear()
                             if (isRefreshing || isLoadMore) {
                                 feed.data.forEach {
-                                    if (it.entityType == "notification")
-                                        if (!blackListRepo.checkUid(it.fromuid))
-                                            messageList.add(it)
+                                    val isValidType = type == "list" ||
+                                            it.entityType in listOf(
+                                        "feed", "feed_reply", "notification"
+                                    )
+                                    if (isValidType && !blackListRepo.checkUid(it.uid))
+                                        messageList.add(it)
                                 }
                             }
                             page++
