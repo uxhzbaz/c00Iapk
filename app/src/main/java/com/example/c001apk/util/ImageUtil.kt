@@ -161,7 +161,7 @@ object ImageUtil {
         }
     }
 
-    private fun showSaveImgDialog(context: Context, url: String, urlList: List<String>?) {
+    fun showSaveImgDialog(context: Context, url: String, urlList: List<String>?) {
         MaterialAlertDialogBuilder(context).apply {
             val items = arrayOf("保存图片", "保存全部图片", "图片分享", "复制图片地址")
             setItems(items) { _: DialogInterface?, position: Int ->
