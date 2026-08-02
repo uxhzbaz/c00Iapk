@@ -12,10 +12,12 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.example.c001apk.constant.Constants.USER_AGENT
 import com.example.c001apk.databinding.ItemChatBinding
 import com.example.c001apk.logic.model.ChatResponse
+import androidx.fragment.app.FragmentActivity
 import com.example.c001apk.util.ImageUtil
 import com.example.c001apk.util.PrefManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.mikaelzero.mojito.ext.mojito
+import net.mikaelzero.mojito.impl.SimpleMojitoViewCallback
 
 class ChatAdapter(
     private val onDelete: (String) -> Unit,
@@ -47,13 +49,26 @@ class ChatAdapter(
                     )
                     Glide.with(bubbleImage).load(glideUrl).into(bubbleImage)
                     bubbleImage.setOnClickListener {
-                        bubbleImage.mojito(data.messagePic)
+                        bubbleImage.mojito(data.messagePic) {
+                            setOnMojitoListener(object : SimpleMojitoViewCallback() {
+                                override fun onLongClick(
+                                    fragmentActivity: FragmentActivity?,
+                                    view: View,
+                                    x: Float,
+                                    y: Float,
+                                    position: Int
+                                ) {
+                                    if (fragmentActivity != null) {
+                                        ImageUtil.showSaveImgDialog(
+                                            fragmentActivity,
+                                            data.messagePic,
+                                            null
+                                        )
+                                    }
+                                }
+                            })
+                        }
                     }
-                } else {
-                    bubbleImage.setImageDrawable(null)
-                    bubbleImage.setOnClickListener(null)
-                    onResolveImage(data.id)
-                }
             }
 
             root.setOnLongClickListener {
