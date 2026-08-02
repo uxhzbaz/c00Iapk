@@ -6,6 +6,10 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.model.LazyHeaders
+import com.example.c001apk.constant.Constants.USER_AGENT
 import com.example.c001apk.databinding.ItemChatBinding
 import com.example.c001apk.logic.model.ChatResponse
 import com.example.c001apk.util.ImageUtil
@@ -33,15 +37,16 @@ class ChatAdapter(
             val bubbleImage = if (isMine) rightImage else leftImage
             ImageUtil.showIMG(avatar, data.fromUserAvatar)
 
-            bubbleText.isVisible = !data.message.isNullOrEmpty()
-            bubbleText.text = data.message
-
             bubbleImage.isVisible = !data.messagePic.isNullOrEmpty()
             if (!data.messagePic.isNullOrEmpty()) {
                 if (data.messagePic.startsWith("http")) {
-                    ImageUtil.showIMG(bubbleImage, data.messagePic)
+                    val glideUrl = GlideUrl(
+                        data.messagePic,
+                        LazyHeaders.Builder().addHeader("User-Agent", USER_AGENT).build()
+                    )
+                    Glide.with(bubbleImage).load(glideUrl).into(bubbleImage)
                     bubbleImage.setOnClickListener {
-                        ImageUtil.startBigImgViewSimple(bubbleImage, data.messagePic)
+                        ImageUtil.startBigImgViewSimple(root.context, data.messagePic)
                     }
                 } else {
                     bubbleImage.setImageDrawable(null)
