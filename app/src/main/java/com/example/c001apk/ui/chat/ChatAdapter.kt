@@ -29,7 +29,7 @@ class ChatAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val data = getItem(position)
-        val isMine = data.fromuid == PrefManager.uid
+        val isMine = data.fromuid != null && data.fromuid == PrefManager.uid
         holder.binding.apply {
             leftGroup.isVisible = !isMine
             rightGroup.isVisible = isMine
