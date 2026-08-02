@@ -219,6 +219,12 @@ interface ApiService {
         @Query("lastItem") lastItem: String?
     ): Call<ChatResponse>
 
+    @GET("/v6/message/showImage")
+    fun getImageUrl(
+        @Query("id") id: String,
+        @Query("type") type: String = "s"
+    ): Call<Any>
+
     @POST("/v6/message/send")
     @FormUrlEncoded
     fun sendMessage(
