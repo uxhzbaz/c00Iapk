@@ -36,6 +36,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
+import android.view.View
+import com.example.c001apk.util.DateUtils
 
 @AndroidEntryPoint
 class ChatActivity : BaseActivity<ActivityChatBinding>() {
