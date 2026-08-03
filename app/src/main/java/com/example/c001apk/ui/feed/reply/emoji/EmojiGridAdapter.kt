@@ -19,7 +19,7 @@ class EmojiGridAdapter(
     private val onCountStop: () -> Unit
 ) : BaseAdapter() {
 
-    override fun getCount() = 28
+    override fun getCount() = 30
 
     override fun getItem(position: Int): Any {
         return 0
@@ -32,7 +32,7 @@ class EmojiGridAdapter(
     @SuppressLint("ViewHolder", "ClickableViewAccessibility")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val emoji = emojiList.getOrNull(position)
-        return if (emoji != null || position == 27) {
+        return if (emoji != null || position == 29) {
             val view =
                 LayoutInflater.from(parent.context).inflate(R.layout.item_emoji, parent, false)
             val imageView: ImageView = view.findViewById(R.id.imageView)
@@ -46,7 +46,7 @@ class EmojiGridAdapter(
             view.setOnClickListener {
                 onClickEmoji(emoji?.first ?: "[c001apk]")
             }
-            if (position == 27) {
+            if (position == 29) {
                 if (SDK_INT >= 26)
                     view.tooltipText = null
                 view.setOnLongClickListener {
