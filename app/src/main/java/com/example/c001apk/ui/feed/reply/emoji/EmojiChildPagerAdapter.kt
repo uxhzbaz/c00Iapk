@@ -23,7 +23,7 @@ class EmojiChildPagerAdapter(
             ).apply {
                 gravity = Gravity.CENTER
             }
-            numColumns = 7
+            numColumns = 6
             verticalSpacing = 4.dp
         }
         return ViewHolder(view)
