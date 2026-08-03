@@ -102,3 +102,4 @@ Token/LoginUtil from: [CoolbbsYou](https://github.com/WaitFme/CoolbbsYou)
     - [x] 表情展示
     - [x] 回复表情选择
     - [x] 文本自由复制
+    - [x] 备份/恢复
