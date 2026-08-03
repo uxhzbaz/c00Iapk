@@ -47,10 +47,13 @@
 
         <ImageView
             android:id="@+id/leftImage"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:scaleType="centerCrop" />
+            android:adjustViewBounds="true"
+            android:maxWidth="200dp"
+            android:maxHeight="280dp"
+            android:scaleType="fitCenter" />
     </LinearLayout>
 
     <LinearLayout
@@ -87,10 +90,13 @@
 
         <ImageView
             android:id="@+id/rightImage"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:scaleType="centerCrop" />
+            android:adjustViewBounds="true"
+            android:maxWidth="200dp"
+            android:maxHeight="280dp"
+            android:scaleType="fitCenter" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/rightAvatar"
