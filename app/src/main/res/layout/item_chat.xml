@@ -32,7 +32,7 @@
                 android:id="@+id/leftText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorSurfaceVariant"
+                android:background="@drawable/bg_chat_bubble_left"
                 android:padding="10dp"
                 android:textSize="15sp" />
 
@@ -72,7 +72,7 @@
                 android:id="@+id/rightText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorPrimaryContainer"
+                android:background="@drawable/bg_chat_bubble_right"
                 android:padding="10dp"
                 android:textSize="15sp" />
 
