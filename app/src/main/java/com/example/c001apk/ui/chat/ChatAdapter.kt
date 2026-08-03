@@ -42,7 +42,7 @@ class ChatAdapter(
             val bubbleImage = if (isMine) rightImage else leftImage
             val bubbleTime = if (isMine) rightTime else leftTime
             ImageUtil.showIMG(avatar, data.fromUserAvatar)
-            bubbleTime.text = DateUtils.fromToday(data.dateline)
+            bubbleTime.text = DateUtils.timeStamp2Date(data.dateline)
 
             bubbleText.isVisible = !data.message.isNullOrEmpty()
             bubbleText.text = data.message
