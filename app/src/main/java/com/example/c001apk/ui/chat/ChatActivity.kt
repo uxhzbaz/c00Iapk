@@ -175,6 +175,7 @@ class ChatActivity : BaseActivity<ActivityChatBinding>() {
         for (i in 0..3) {
             emojiList.add(dataList.subList(i * 27 + 4, (i + 1) * 27 + 4))
         }
+        emojiList.add(dataList.subList(155, dataList.size))
         coolBList.add(dataList.subList(112, 139))
         coolBList.add(dataList.subList(139, 155))
         val list = listOf(recentList, emojiList, coolBList)
