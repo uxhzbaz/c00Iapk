@@ -5,6 +5,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.widget.Toast
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -12,12 +13,17 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.ColorUtils
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.preference.Preference
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.c001apk.BuildConfig
 import com.example.c001apk.R
+import com.example.c001apk.util.AppDataManager
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import com.example.c001apk.ui.blacklist.BlackListActivity
 import com.example.c001apk.ui.main.MainActivity
 import com.example.c001apk.ui.others.AboutActivity
@@ -37,6 +43,31 @@ import rikka.material.preference.MaterialSwitchPreference
 import rikka.preference.SimpleMenuPreference
 
 class SettingsPreferenceFragment : PreferenceFragmentCompat() {
+
+    private val backupSAFLauncher =
+        registerForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
+            uri ?: return@registerForActivityResult
+            val ok = AppDataManager.backup(requireContext(), uri)
+            Toast.makeText(requireContext(), if (ok) "备份成功" else "备份失败", Toast.LENGTH_SHORT).show()
+        }
+
+    private val restoreSAFLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri ?: return@registerForActivityResult
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("确定恢复数据？")
+                .setMessage("覆盖当前数据")
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    val ok = AppDataManager.restore(requireContext(), uri)
+                    if (ok) {
+                        AppDataManager.restartApp(requireContext())
+                    } else {
+                        Toast.makeText(requireContext(), "恢复失败", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .show()
+        }
 
     override fun onCreateRecyclerView(
         inflater: LayoutInflater,
@@ -271,7 +302,26 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             }
         }
 
-        findPreference<Preference>("imageQuality")?.setOnPreferenceClickListener {
+        findPreference<Preference>("backupData")?.setOnPreferenceClickListener {
+    val date = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+    runCatching {
+        backupSAFLauncher.launch("c00Iapk_backup_$date.zip")
+    }.onFailure {
+        Toast.makeText(requireContext(), "备份失败", Toast.LENGTH_SHORT).show()
+    }
+    true
+}
+
+findPreference<Preference>("restoreData")?.setOnPreferenceClickListener {
+    runCatching {
+        restoreSAFLauncher.launch("application/zip")
+    }.onFailure {
+        Toast.makeText(requireContext(), "恢复失败", Toast.LENGTH_SHORT).show()
+    }
+    true
+}
+
+findPreference<Preference>("imageQuality")?.setOnPreferenceClickListener {
             MaterialAlertDialogBuilder(requireContext()).apply {
                 setTitle("图片画质")
                 val items = arrayOf("网络自适应", "原图", "普清")
