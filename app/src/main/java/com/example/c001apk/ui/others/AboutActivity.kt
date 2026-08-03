@@ -44,6 +44,27 @@ class AboutActivity : AbsAboutActivity() {
             )
         )
 
+        items.add(Category(getString(R.string.about_maintainer)))
+        items.add(
+            Contributor(
+                R.drawable.tongzhen,
+                "同真",
+                "Maintainer",
+                "https://github.com/uxhzbaz"
+            )
+        )
+        items.add(Line())
+        items.add(
+            Contributor(
+                R.drawable.claude,
+                "Claude",
+                "Maintainer",
+                "https://claude.ai"
+            )
+        )
+
+        items.add(Category(getString(R.string.feedback)))
+
         items.add(Category(getString(R.string.feedback)))
         items.add(Card("Github\nhttps://github.com/uxhzbaz/c00Iapk"))
 
