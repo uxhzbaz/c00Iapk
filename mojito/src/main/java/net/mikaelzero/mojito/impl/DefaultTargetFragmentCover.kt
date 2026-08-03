@@ -34,8 +34,8 @@ class DefaultTargetFragmentCover(val topMargin: Float = 0f) : FragmentCoverLoade
 
         val seeTargetImageTv = view?.findViewById<TextView>(R.id.seeTargetImageTv)
         val indexLp = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT)
-        indexLp.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-        indexLp.topMargin = originTopMargin
+        indexLp.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+        indexLp.bottomMargin = originTopMargin
         view?.layoutParams = indexLp
         seeTargetImageTv?.setOnClickListener {
             iMojitoFragment.loadTargetUrl()
