@@ -246,6 +246,30 @@ class AboutActivity : AbsAboutActivity() {
                 "https://github.com/Blankj/AndroidUtilCode"
             )
         )
+        items.add(
+            License(
+                "leakcanary",
+                "square",
+                License.APACHE_2,
+                "https://github.com/square/leakcanary"
+            )
+        )
+        items.add(
+            License(
+                "ImmersionBar",
+                "gyf-dev",
+                License.APACHE_2,
+                "https://github.com/gyf-dev/ImmersionBar"
+            )
+        )
+        items.add(
+            License(
+                "sketch",
+                "panpf",
+                License.APACHE_2,
+                "https://github.com/panpf/sketch"
+            )
+        )
 
     }
 
