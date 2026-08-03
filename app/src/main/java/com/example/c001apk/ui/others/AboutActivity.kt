@@ -16,7 +16,7 @@ class AboutActivity : AbsAboutActivity() {
 
     @SuppressLint("SetTextI18n")
     override fun onCreateHeader(icon: ImageView, slogan: TextView, version: TextView) {
-        icon.setImageResource(R.mipmap.ic_launcher)
+        icon.setImageResource(R.drawable.ic_launcher_foreground)
         slogan.text = applicationInfo.loadLabel(packageManager)
         version.text = "${BuildConfig.VERSION_NAME}(${BuildConfig.VERSION_CODE})"
     }
