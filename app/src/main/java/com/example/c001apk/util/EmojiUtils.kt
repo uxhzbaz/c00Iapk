@@ -163,6 +163,37 @@ object EmojiUtils {
         emojiMap["[新酷币1€]"] = R.drawable.coolapk_emotion_78
         emojiMap["[新酷币2€]"] = R.drawable.coolapk_emotion_79
         emojiMap["[新酷币5€]"] = R.drawable.coolapk_emotion_80
+
+        emojiMap["[牛牛眨眼]"] = R.drawable.niuniuzhayan
+        emojiMap["[牛牛疑惑]"] = R.drawable.niuniuyihuo
+        emojiMap["[牛牛星星眼]"] = R.drawable.niuniuxingxingyan
+        emojiMap["[牛牛喜欢]"] = R.drawable.niuniuxihuan
+        emojiMap["[牛牛问号脸]"] = R.drawable.niuniuwenhaolian
+        emojiMap["[牛牛委屈]"] = R.drawable.niuniuweiqu
+        emojiMap["[牛牛微笑]"] = R.drawable.niuniuweixiao
+        emojiMap["[牛牛思考]"] = R.drawable.niuniusikao
+        emojiMap["[牛牛生气]"] = R.drawable.niuniushengqi
+        emojiMap["[牛牛生病]"] = R.drawable.niuniushengbing
+        emojiMap["[牛牛伤心]"] = R.drawable.niuniushangxin
+        emojiMap["[牛牛认真脸]"] = R.drawable.niuniurenzhenlian
+        emojiMap["[牛牛求饶]"] = R.drawable.niuniuqiurao
+        emojiMap["[牛牛疲惫]"] = R.drawable.niuniupibei
+        emojiMap["[牛牛墨镜]"] = R.drawable.niuniumojing
+        emojiMap["[牛牛冷汗]"] = R.drawable.niuniulenghan
+        emojiMap["[牛牛惊讶]"] = R.drawable.niuniujingya
+        emojiMap["[牛牛娇羞]"] = R.drawable.niuniujiaoxiu
+        emojiMap["[牛牛挥手]"] = R.drawable.niuniuhuishou
+        emojiMap["[牛牛害羞]"] = R.drawable.niuniuhaixiu
+        emojiMap["[牛牛害怕]"] = R.drawable.niuniuhaipa
+        emojiMap["[牛牛鬼脸]"] = R.drawable.niuniuguilian
+        emojiMap["[牛牛尴尬]"] = R.drawable.niuniuganga
+        emojiMap["[牛牛恶心]"] = R.drawable.niuniuexin
+        emojiMap["[牛牛点赞]"] = R.drawable.niuniudianzan
+        emojiMap["[牛牛戴耳机]"] = R.drawable.niuniudaierji
+        emojiMap["[牛牛大喊]"] = R.drawable.niuniudahan
+        emojiMap["[牛牛呲牙笑]"] = R.drawable.niuniuciyaxiao
+        emojiMap["[牛牛财奴]"] = R.drawable.niuniucainu
+        emojiMap["[牛牛阿巴]"] = R.drawable.niuniuaba
     }
 
 }
