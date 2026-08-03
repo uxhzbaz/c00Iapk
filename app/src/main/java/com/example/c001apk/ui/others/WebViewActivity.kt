@@ -109,7 +109,9 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                 javaScriptCanOpenWindowsAutomatically = true
                 loadsImagesAutomatically = true
                 allowFileAccess = false
-                userAgentString = PrefManager.USER_AGENT
+                if (!isLogin) {
+                    userAgentString = PrefManager.USER_AGENT
+                }
                 if (SDK_INT >= 32) {
                     if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
                         WebSettingsCompat.setAlgorithmicDarkeningAllowed(this, true)
