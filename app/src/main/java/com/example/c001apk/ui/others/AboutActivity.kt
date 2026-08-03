@@ -216,6 +216,38 @@ class AboutActivity : AbsAboutActivity() {
                 "https://github.com/AlexMofer/SmoothInputLayout"
             )
         )
+        items.add(
+            License(
+                "gson",
+                "google",
+                License.APACHE_2,
+                "https://github.com/google/gson"
+            )
+        )
+        items.add(
+            License(
+                "appcenter-sdk-android",
+                "microsoft",
+                License.MIT,
+                "https://github.com/microsoft/appcenter-sdk-android"
+            )
+        )
+        items.add(
+            License(
+                "aliyun-oss-android-sdk",
+                "aliyun",
+                License.MIT,
+                "https://github.com/aliyun/aliyun-oss-android-sdk"
+            )
+        )
+        items.add(
+            License(
+                "AndroidUtilCode",
+                "Blankj",
+                License.APACHE_2,
+                "https://github.com/Blankj/AndroidUtilCode"
+            )
+        )
 
     }
 
