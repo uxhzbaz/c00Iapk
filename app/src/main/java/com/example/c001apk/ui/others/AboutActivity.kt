@@ -64,8 +64,6 @@ class AboutActivity : AbsAboutActivity() {
         )
 
         items.add(Category(getString(R.string.feedback)))
-
-        items.add(Category(getString(R.string.feedback)))
         items.add(Card("Github\nhttps://github.com/uxhzbaz/c00Iapk"))
 
         items.add(Category(getString(R.string.about_open_source)))
