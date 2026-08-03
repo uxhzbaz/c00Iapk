@@ -17,6 +17,7 @@ import com.example.c001apk.logic.model.ChatResponse
 import com.example.c001apk.util.DateUtils
 import com.example.c001apk.util.ImageUtil
 import com.example.c001apk.util.PrefManager
+import com.example.c001apk.util.SpannableStringBuilderUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.mikaelzero.mojito.ext.mojito
 import net.mikaelzero.mojito.impl.SimpleMojitoViewCallback
@@ -45,7 +46,9 @@ class ChatAdapter(
             bubbleTime.text = DateUtils.timeStamp2Date(data.dateline)
 
             bubbleText.isVisible = !data.message.isNullOrEmpty()
-            bubbleText.text = data.message
+            bubbleText.text = SpannableStringBuilderUtil.setText(
+                root.context, data.message.orEmpty(), bubbleText.textSize, null
+            )
 
             val pic = data.messagePic
             bubbleImage.isVisible = !pic.isNullOrEmpty()
