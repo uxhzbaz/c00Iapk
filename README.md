@@ -69,7 +69,7 @@ Token/LoginUtil from: [CoolbbsYou](https://github.com/WaitFme/CoolbbsYou)
     - [x] 在应用、数码、用户、话题中搜索
 
 - [x] 消息
-    - [x] 登录
+    - [] 登录
     - [x] 私信
     - [x] 动态
     - [x] 关注(用户、话题、数码、应用)
