@@ -270,6 +270,38 @@ class AboutActivity : AbsAboutActivity() {
                 "https://github.com/panpf/sketch"
             )
         )
+        items.add(
+            License(
+                "Gramophone",
+                "AkaneFoundation",
+                License.GPL_V3,
+                "https://github.com/AkaneFoundation/Gramophone"
+            )
+        )
+        items.add(
+            License(
+                "CustomHorizontalScrollView",
+                "SpiritCroc",
+                License.GPL_V3,
+                "https://github.com/SpiritCroc"
+            )
+        )
+        items.add(
+            License(
+                "checkable-chip-view",
+                "okdroid",
+                License.APACHE_2,
+                "https://github.com/okdroid/checkable-chip-view"
+            )
+        )
+        items.add(
+            License(
+                "views-widgets-samples",
+                "android",
+                License.APACHE_2,
+                "https://github.com/android/views-widgets-samples"
+            )
+        )
 
     }
 
