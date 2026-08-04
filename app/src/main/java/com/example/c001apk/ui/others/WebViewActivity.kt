@@ -309,6 +309,13 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                                 "REQUEST",
                                 "${request?.method} ${request?.url}"
                             )
+                            if (request?.url?.host == "ir-sdk.dun.163.com") {
+                                appendLog("BLOCK", "force-fail ${request.url} to avoid hang")
+                                return android.webkit.WebResourceResponse(
+                                    "text/plain", "utf-8", 403, "Forbidden",
+                                    emptyMap(), java.io.ByteArrayInputStream(ByteArray(0))
+                                )
+                            }
                         }
                         return super.shouldInterceptRequest(view, request)
                     }
