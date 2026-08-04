@@ -94,7 +94,7 @@
 
     <PreferenceCategory android:title="@string/others">
     <Preference
-        android:icon="@drawable/ic_logo"
+        android:icon="@mipmap/ic_launcher"
         android:key="about"
         android:title="@string/about" />
     <Preference
