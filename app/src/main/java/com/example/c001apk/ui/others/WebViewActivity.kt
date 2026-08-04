@@ -157,13 +157,13 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                     setCookie("m.coolapk.com", "token=${PrefManager.token}")
                 }
                 flush()
-            }
-            if (isLogin) {
-                appendLog(
-                    "COOKIE",
-                    "thirdPartyAllowed=${acceptThirdPartyCookies(webView)} " +
-                        "hasCookie=${!getCookie("https://m.coolapk.com/").isNullOrEmpty()}"
-                )
+                if (isLogin) {
+                    appendLog(
+                        "COOKIE",
+                        "thirdPartyAllowed=${acceptThirdPartyCookies(webView)} " +
+                            "hasCookie=${!getCookie("https://m.coolapk.com/").isNullOrEmpty()}"
+                    )
+                }
             }
             it.apply {
                 setDownloadListener { url, userAgent, contentDisposition, mimetype, _ ->
@@ -172,7 +172,7 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                         "UTF-8"
                     )
                     MaterialAlertDialogBuilder(this@WebViewActivity).apply {
-                        setTitle("确定下载文件？")
+                        setTitle("确定下载？")
                         setMessage(fileName)
                         setNeutralButton("外部打开") { _, _ ->
                             try {
