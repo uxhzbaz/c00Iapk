@@ -51,15 +51,31 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             Toast.makeText(requireContext(), if (ok) "备份成功" else "备份失败", Toast.LENGTH_SHORT).show()
         }
 
+    private var backupPassword: String? = null
+
+    private val backupSAFLauncher =
+        registerForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
+            uri ?: return@registerForActivityResult
+            val ok = AppDataManager.backup(requireContext(), uri, backupPassword)
+            Toast.makeText(requireContext(), if (ok) "备份成功" else "备份失败", Toast.LENGTH_SHORT).show()
+        }
+
     private val restoreSAFLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             uri ?: return@registerForActivityResult
+            val view = LayoutInflater.from(requireContext())
+                .inflate(R.layout.item_x_app_token, null, false)
+            val editText: EditText = view.findViewById(R.id.editText)
+            editText.hint = "若备份加密，请输入密码"
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("确定恢复数据？")
                 .setMessage("覆盖当前数据")
+                .setView(view)
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
-                    val ok = AppDataManager.restore(requireContext(), uri)
+                    val ok = AppDataManager.restore(
+                        requireContext(), uri, editText.text.toString().ifBlank { null }
+                    )
                     if (ok) {
                         AppDataManager.restartApp(requireContext())
                     } else {
@@ -303,12 +319,24 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         }
 
         findPreference<Preference>("backupData")?.setOnPreferenceClickListener {
-    val date = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-    runCatching {
-        backupSAFLauncher.launch("c00Iapk_backup_$date.zip")
-    }.onFailure {
-        Toast.makeText(requireContext(), "备份失败", Toast.LENGTH_SHORT).show()
-    }
+    val view = LayoutInflater.from(requireContext())
+        .inflate(R.layout.item_x_app_token, null, false)
+    val editText: EditText = view.findViewById(R.id.editText)
+    editText.hint = "备份密码(留空则不加密)"
+    MaterialAlertDialogBuilder(requireContext())
+        .setTitle("备份数据")
+        .setView(view)
+        .setNegativeButton(android.R.string.cancel, null)
+        .setPositiveButton(android.R.string.ok) { _, _ ->
+            backupPassword = editText.text.toString().ifBlank { null }
+            val date = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            runCatching {
+                backupSAFLauncher.launch("c00Iapk_backup_$date.zip")
+            }.onFailure {
+                Toast.makeText(requireContext(), "备份失败", Toast.LENGTH_SHORT).show()
+            }
+        }
+        .show()
     true
 }
 
