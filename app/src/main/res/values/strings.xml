@@ -11,6 +11,7 @@
     <string name="clearAll">清除</string>
     <string name="clearAllTitle">确认清除全部历史记录吗？</string>
     <string name="clear_cache">清理缓存</string>
+    <string name="share_log">分享日志</string>
 
     <string name="settings_theme">主题</string>
     <string name="settings_system_theme_color_summary">系统取色</string>
