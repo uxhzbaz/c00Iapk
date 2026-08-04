@@ -21,4 +21,9 @@
         android:title="@string/clear_cache"
         android:showAsAction="never" />
 
+    <item
+        android:id="@+id/shareLog"
+        android:title="@string/share_log"
+        android:showAsAction="never" />
+
 </menu>
