@@ -37,10 +37,9 @@ data class MessageResponse(
         val userAction: HomeFeedResponse.UserAction?,
         val forwardSourceFeed: ForwardSourceFeed?,
         val feed: Feed?,
-        val likeUsername: String,
-        val likeUid: String,
+        val likeUserInfo: LikeUserInfo?,
         val likeTime: Long,
-        val likeAvatar: String,
+        val url: String?,
         val fid: String,
         val fromUserAvatar: String,
         val fromusername: String,
@@ -62,6 +61,12 @@ data class MessageResponse(
         val url: String
     )
 
+    data class LikeUserInfo(
+        val uid: String?,
+        val username: String?,
+        val userAvatar: String?
+    )
+
     @Parcelize
     data class ForwardSourceFeed(
         val entityType: String,
@@ -75,4 +80,3 @@ data class MessageResponse(
         val picArr: List<String>?,
     ): Parcelable
 }
-
