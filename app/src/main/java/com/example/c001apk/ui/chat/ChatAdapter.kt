@@ -14,6 +14,7 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.example.c001apk.constant.Constants.USER_AGENT
 import com.example.c001apk.databinding.ItemChatBinding
 import com.example.c001apk.logic.model.ChatResponse
+import com.example.c001apk.util.ClipboardUtil.copyText
 import com.example.c001apk.util.DateUtils
 import com.example.c001apk.util.ImageUtil
 import com.example.c001apk.util.PrefManager
@@ -87,8 +88,15 @@ class ChatAdapter(
             }
 
             root.setOnLongClickListener {
+                val hasText = !data.message.isNullOrEmpty()
+                val items = if (hasText) arrayOf("复制", "删除") else arrayOf("删除")
                 MaterialAlertDialogBuilder(root.context)
-                    .setItems(arrayOf("删除")) { _, _ -> onDelete(data.id.orEmpty()) }
+                    .setItems(items) { _, which ->
+                        when (items[which]) {
+                            "复制" -> copyText(root.context, data.message.orEmpty())
+                            "删除" -> onDelete(data.id.orEmpty())
+                        }
+                    }
                     .show()
                 true
             }
