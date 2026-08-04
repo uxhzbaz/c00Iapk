@@ -44,13 +44,6 @@ import rikka.preference.SimpleMenuPreference
 
 class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
-    private val backupSAFLauncher =
-        registerForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
-            uri ?: return@registerForActivityResult
-            val ok = AppDataManager.backup(requireContext(), uri)
-            Toast.makeText(requireContext(), if (ok) "备份成功" else "备份失败", Toast.LENGTH_SHORT).show()
-        }
-
     private var backupPassword: String? = null
 
     private val backupSAFLauncher =
