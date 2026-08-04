@@ -18,6 +18,7 @@ import com.example.c001apk.util.DateUtils
 import com.example.c001apk.util.ImageUtil
 import com.example.c001apk.util.PrefManager
 import com.example.c001apk.util.SpannableStringBuilderUtil
+import com.example.c001apk.view.LinkMovementClickMethod
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.mikaelzero.mojito.ext.mojito
 import net.mikaelzero.mojito.impl.SimpleMojitoViewCallback
@@ -49,6 +50,8 @@ class ChatAdapter(
             bubbleText.text = SpannableStringBuilderUtil.setText(
                 root.context, data.message.orEmpty(), bubbleText.textSize, null
             )
+            bubbleText.movementMethod = LinkMovementClickMethod.instance
+            bubbleText.highlightColor = android.graphics.Color.TRANSPARENT
 
             val pic = data.messagePic
             bubbleImage.isVisible = !pic.isNullOrEmpty()
