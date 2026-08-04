@@ -16,6 +16,7 @@ import com.example.c001apk.ui.chat.ChatActivity
 import com.example.c001apk.ui.feed.FeedActivity
 import com.example.c001apk.util.DateUtils
 import com.example.c001apk.util.IntentUtil
+import com.example.c001apk.util.NetWorkUtil.openLink
 import com.example.c001apk.util.PrefManager
 import com.example.c001apk.util.Utils.richToString
 
@@ -80,10 +81,13 @@ class MessageContentAdapter(
     ) :
         RecyclerView.ViewHolder(binding.root) {
         var id: String = ""
+        var url: String? = null
 
         init {
-            if (type != "feedLike") {
-                itemView.setOnClickListener {
+            itemView.setOnClickListener {
+                if (type == "feedLike") {
+                    url?.let { openLink(itemView.context, it, null) }
+                } else {
                     IntentUtil.startActivity<FeedActivity>(itemView.context) {
                         putExtra("id", id)
                     }
@@ -93,6 +97,7 @@ class MessageContentAdapter(
 
         fun bind(data: MessageResponse.Data) {
             id = data.id
+            url = data.url
             binding.setVariable(BR.type, type)
             binding.setVariable(BR.data, data)
             binding.setVariable(BR.listener, listener)
