@@ -236,6 +236,8 @@ class MessageFragment : BaseFragment<FragmentMessageBinding>() {
             initScroll()
             initRefresh()
             initObserve()
+        } else if (isLogin && viewModel.initLogin) {
+            initLogin()
         }
         if (!viewModel.isInit && isLogin) {
             if (CookieUtil.badge != 0) {
