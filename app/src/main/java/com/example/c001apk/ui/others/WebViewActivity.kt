@@ -26,6 +26,7 @@ import android.widget.Toast
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import androidx.webkit.WebSettingsCompat
+import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import com.example.c001apk.BuildConfig
 import com.example.c001apk.R
@@ -34,6 +35,7 @@ import com.example.c001apk.ui.base.BaseActivity
 import com.example.c001apk.ui.main.MainActivity
 import com.example.c001apk.util.ActivityCollector
 import com.example.c001apk.util.ClipboardUtil.copyText
+import com.example.c001apk.util.IntentUtil
 import com.example.c001apk.util.PrefManager
 import com.example.c001apk.util.http2https
 import com.google.android.material.appbar.AppBarLayout.ScrollingViewBehavior
@@ -41,13 +43,22 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import java.net.URISyntaxException
 import java.net.URLDecoder
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.system.exitProcess
-
 class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
 
     private val link: String? by lazy { intent.getStringExtra("url") }
     private val isLogin: Boolean by lazy { intent.getBooleanExtra("isLogin", false) }
     private var webView: WebView? = null
+    private val loginLog = StringBuilder()
+
+    private fun appendLog(tag: String, msg: String) {
+        val line = "${SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(Date())} [$tag] $msg"
+        Log.d("WebViewLogin", line)
+        loginLog.append(line).append('\n')
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,6 +95,14 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                 .show()
         }
 
+        if (isLogin) {
+            val pkg = WebViewCompat.getCurrentWebViewPackage(this)
+            appendLog(
+                "ENV",
+                "url=$link ua=${PrefManager.USER_AGENT} webView=${pkg?.packageName}:${pkg?.versionName} " +
+                    "sdk=${SDK_INT} device=${android.os.Build.MANUFACTURER}/${android.os.Build.MODEL}"
+            )
+        }
         link?.let {
             loadUrlInWebView(it)
         }
@@ -139,6 +158,13 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                 }
                 flush()
             }
+            if (isLogin) {
+                appendLog(
+                    "COOKIE",
+                    "thirdPartyAllowed=${acceptThirdPartyCookies(webView)} " +
+                        "hasCookie=${!getCookie("https://m.coolapk.com/").isNullOrEmpty()}"
+                )
+            }
             it.apply {
                 setDownloadListener { url, userAgent, contentDisposition, mimetype, _ ->
                     val fileName = URLDecoder.decode(
@@ -146,7 +172,7 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                         "UTF-8"
                     )
                     MaterialAlertDialogBuilder(this@WebViewActivity).apply {
-                        setTitle("确定下载文件吗？")
+                        setTitle("确定下载文件？")
                         setMessage(fileName)
                         setNeutralButton("外部打开") { _, _ ->
                             try {
@@ -275,6 +301,48 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                         return super.shouldOverrideUrlLoading(webView, request)
                     }
 
+                    override fun shouldInterceptRequest(
+                        view: WebView?, request: WebResourceRequest?
+                    ): android.webkit.WebResourceResponse? {
+                        if (isLogin) {
+                            appendLog(
+                                "REQUEST",
+                                "${request?.method} ${request?.url}"
+                            )
+                        }
+                        return super.shouldInterceptRequest(view, request)
+                    }
+
+                    override fun onReceivedError(
+                        view: WebView?,
+                        request: WebResourceRequest?,
+                        error: android.webkit.WebResourceError?
+                    ) {
+                        super.onReceivedError(view, request, error)
+                        if (isLogin) {
+                            appendLog(
+                                "ERROR",
+                                "url=${request?.url} mainFrame=${request?.isForMainFrame} " +
+                                    "code=${error?.errorCode} desc=${error?.description}"
+                            )
+                        }
+                    }
+
+                    override fun onReceivedHttpError(
+                        view: WebView?,
+                        request: WebResourceRequest?,
+                        errorResponse: android.webkit.WebResourceResponse?
+                    ) {
+                        super.onReceivedHttpError(view, request, errorResponse)
+                        if (isLogin) {
+                            appendLog(
+                                "HTTP_ERROR",
+                                "url=${request?.url} status=${errorResponse?.statusCode} " +
+                                    "reason=${errorResponse?.reasonPhrase}"
+                            )
+                        }
+                    }
+
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
                         view?.evaluateJavascript(
@@ -293,6 +361,12 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                     override fun onConsoleMessage(consoleMessage: android.webkit.ConsoleMessage?): Boolean {
                         consoleMessage?.let {
                             Log.d("WebViewConsole", "${it.message()} -- line: ${it.lineNumber()}")
+                            if (isLogin) {
+                                appendLog(
+                                    "CONSOLE",
+                                    "${it.messageLevel()} ${it.message()} (${it.sourceId()}:${it.lineNumber()})"
+                                )
+                            }
                         }
                         return true
                     }
@@ -357,6 +431,14 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                     clearCache(true)
                     clearFormData()
                     Toast.makeText(this@WebViewActivity, "清除缓存成功", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            R.id.shareLog -> {
+                if (loginLog.isEmpty()) {
+                    Toast.makeText(this, "暂无日志", Toast.LENGTH_SHORT).show()
+                } else {
+                    IntentUtil.shareText(this, loginLog.toString())
                 }
             }
         }
