@@ -36,6 +36,16 @@
                 android:padding="10dp"
                 android:textSize="15sp" />
 
+            <ImageView
+                android:id="@+id/leftImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:adjustViewBounds="true"
+                android:maxWidth="200dp"
+                android:maxHeight="280dp"
+                android:scaleType="fitCenter" />
+
             <TextView
                 android:id="@+id/leftTime"
                 android:layout_width="wrap_content"
@@ -44,16 +54,6 @@
                 android:textColor="@android:color/darker_gray"
                 android:textSize="11sp" />
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/leftImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:adjustViewBounds="true"
-            android:maxWidth="200dp"
-            android:maxHeight="280dp"
-            android:scaleType="fitCenter" />
     </LinearLayout>
 
     <LinearLayout
@@ -69,7 +69,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="end">
 
             <TextView
                 android:id="@+id/rightText"
@@ -79,6 +80,16 @@
                 android:padding="10dp"
                 android:textSize="15sp" />
 
+            <ImageView
+                android:id="@+id/rightImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:adjustViewBounds="true"
+                android:maxWidth="200dp"
+                android:maxHeight="280dp"
+                android:scaleType="fitCenter" />
+
             <TextView
                 android:id="@+id/rightTime"
                 android:layout_width="wrap_content"
@@ -87,16 +98,6 @@
                 android:textColor="@android:color/darker_gray"
                 android:textSize="11sp" />
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/rightImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:adjustViewBounds="true"
-            android:maxWidth="200dp"
-            android:maxHeight="280dp"
-            android:scaleType="fitCenter" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/rightAvatar"
