@@ -2,6 +2,7 @@ package com.example.c001apk.util
 
 import android.content.Context
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import java.io.File
 import java.io.InputStream
@@ -27,7 +28,7 @@ object AppDataManager {
     private val DB_NAMES = listOf(
         "recent_emoji.db", "user_blacklist.db", "topic_blacklist.db",
         "search_history.db", "browse_history.db", "feed_favorite.db",
-        "home_menu.db", "recent_at_user.db"
+        "home_menu.db"
     )
 
     fun backup(context: Context, uri: Uri, password: String? = null): Boolean = runCatching {
@@ -47,13 +48,18 @@ object AppDataManager {
 
                 val dbDir = context.getDatabasePath(DB_NAMES.first()).parentFile
                 DB_NAMES.forEach { name ->
-                    listOf(name, "$name-wal", "$name-shm").forEach { fn ->
-                        addFile(zip, File(dbDir, fn), "databases/$fn")
-                    }
+                    checkpoint(context, name)
+                    addFile(zip, File(dbDir, name), "databases/$name")
                 }
             }
         } ?: return false
     }.isSuccess
+
+    private fun checkpoint(context: Context, name: String) = runCatching {
+        SQLiteDatabase.openDatabase(
+            context.getDatabasePath(name).path, null, SQLiteDatabase.OPEN_READWRITE
+        ).use { it.rawQuery("PRAGMA wal_checkpoint(TRUNCATE)", null).use { c -> c.moveToFirst() } }
+    }
 
     fun restore(context: Context, uri: Uri, password: String? = null): Boolean = runCatching {
         context.contentResolver.openInputStream(uri)?.use { raw ->
