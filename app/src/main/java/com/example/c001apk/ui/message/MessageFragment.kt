@@ -21,6 +21,8 @@ import com.example.c001apk.databinding.FragmentMessageBinding
 import com.example.c001apk.ui.base.BaseFragment
 import com.example.c001apk.ui.main.MainActivity
 import com.example.c001apk.ui.others.WebViewActivity
+import com.example.c001apk.util.AccountManager
+import com.example.c001apk.util.AppDataManager
 import com.example.c001apk.util.CookieUtil
 import com.example.c001apk.util.CookieUtil.atcommentme
 import com.example.c001apk.util.CookieUtil.atme
@@ -256,6 +258,28 @@ class MessageFragment : BaseFragment<FragmentMessageBinding>() {
             inflateMenu(R.menu.message_menu)
             setOnMenuItemClickListener {
                 when (it.itemId) {
+                    R.id.switch_account -> {
+                        val accounts = AccountManager.accounts
+                        val names = accounts.map { acc ->
+                            val name = URLDecoder.decode(acc.username, "UTF-8")
+                            if (acc.uid == PrefManager.uid) "$name (当前)" else name
+                        } + "+ 添加账号"
+                        MaterialAlertDialogBuilder(requireContext()).apply {
+                            setTitle(R.string.switchAccount)
+                            setItems(names.toTypedArray()) { _, which ->
+                                if (which == accounts.size) {
+                                    IntentUtil.startActivity<WebViewActivity>(requireContext()) {
+                                        putExtra("url", "https://account.coolapk.com/auth/login?type=mobile")
+                                        putExtra("isLogin", true)
+                                    }
+                                } else if (accounts[which].uid != PrefManager.uid) {
+                                    AccountManager.switchTo(accounts[which])
+                                    AppDataManager.restartApp(requireContext())
+                                }
+                            }
+                            show()
+                        }
+                    }
                     R.id.logout -> {
                         MaterialAlertDialogBuilder(requireContext()).apply {
                             setTitle(R.string.logoutTitle)
