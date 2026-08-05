@@ -47,6 +47,10 @@ object PrefManager {
         get() = pref.getString(UID, "")!!
         set(value) = pref.edit().putString(UID, value).apply()
 
+    var accountsJson: String
+        get() = pref.getString("accounts", "[]")!!
+        set(value) = pref.edit().putString("accounts", value).apply()
+
     var username: String
         get() = pref.getString(NAME, "")!!
         set(value) = pref.edit().putString(NAME, value).apply()
