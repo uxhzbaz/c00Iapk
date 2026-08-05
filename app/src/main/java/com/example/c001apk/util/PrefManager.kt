@@ -51,6 +51,18 @@ object PrefManager {
         get() = pref.getString("accounts", "[]")!!
         set(value) = pref.edit().putString("accounts", value).apply()
 
+    var webdavUrl: String
+        get() = pref.getString("webdavUrl", "")!!
+        set(value) = pref.edit().putString("webdavUrl", value).apply()
+
+    var webdavUser: String
+        get() = pref.getString("webdavUser", "")!!
+        set(value) = pref.edit().putString("webdavUser", value).apply()
+
+    var webdavPass: String
+        get() = pref.getString("webdavPass", "")!!
+        set(value) = pref.edit().putString("webdavPass", value).apply()
+
     var username: String
         get() = pref.getString(NAME, "")!!
         set(value) = pref.edit().putString(NAME, value).apply()
