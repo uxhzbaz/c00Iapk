@@ -109,6 +109,18 @@
         android:icon="@drawable/outline_file_upload_24"
         android:key="restoreData"
         android:title="@string/restore_data" />
+    <Preference
+        android:icon="@drawable/ic_link"
+        android:key="webdavConfig"
+        android:title="@string/webdav_config" />
+    <Preference
+        android:icon="@drawable/outline_file_upload_24"
+        android:key="webdavBackup"
+        android:title="@string/webdav_backup" />
+    <Preference
+        android:icon="@drawable/outline_file_download_24"
+        android:key="webdavRestore"
+        android:title="@string/webdav_restore" />
 </PreferenceCategory>
 
 </PreferenceScreen>
