@@ -14,6 +14,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.ColorUtils
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import com.example.c001apk.util.WebDavManager
 import androidx.preference.Preference
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
@@ -338,6 +343,96 @@ findPreference<Preference>("restoreData")?.setOnPreferenceClickListener {
         restoreSAFLauncher.launch("application/zip")
     }.onFailure {
         Toast.makeText(requireContext(), "恢复失败", Toast.LENGTH_SHORT).show()
+    }
+    true
+}
+
+findPreference<Preference>("webdavConfig")?.setOnPreferenceClickListener {
+    val view = LayoutInflater.from(requireContext())
+        .inflate(R.layout.item_webdav_config, null, false)
+    val editUrl: EditText = view.findViewById(R.id.editUrl)
+    val editUser: EditText = view.findViewById(R.id.editUser)
+    val editPass: EditText = view.findViewById(R.id.editPass)
+    editUrl.setText(PrefManager.webdavUrl)
+    editUser.setText(PrefManager.webdavUser)
+    editPass.setText(PrefManager.webdavPass)
+    MaterialAlertDialogBuilder(requireContext())
+        .setTitle(R.string.webdav_config)
+        .setView(view)
+        .setNegativeButton(android.R.string.cancel, null)
+        .setPositiveButton(android.R.string.ok) { _, _ ->
+            PrefManager.webdavUrl = editUrl.text.toString().trim()
+            PrefManager.webdavUser = editUser.text.toString().trim()
+            PrefManager.webdavPass = editPass.text.toString()
+        }
+        .show()
+    true
+}
+
+findPreference<Preference>("webdavBackup")?.setOnPreferenceClickListener {
+    if (PrefManager.webdavUrl.isEmpty()) {
+        Toast.makeText(requireContext(), "请先配置 WebDAV", Toast.LENGTH_SHORT).show()
+        return@setOnPreferenceClickListener true
+    }
+    val view = LayoutInflater.from(requireContext())
+        .inflate(R.layout.item_x_app_token, null, false)
+    val editText: EditText = view.findViewById(R.id.editText)
+    editText.hint = "备份密码(留空则不加密)"
+    MaterialAlertDialogBuilder(requireContext())
+        .setTitle(R.string.webdav_backup)
+        .setView(view)
+        .setNegativeButton(android.R.string.cancel, null)
+        .setPositiveButton(android.R.string.ok) { _, _ ->
+            val password = editText.text.toString().ifBlank { null }
+            lifecycleScope.launch(Dispatchers.IO) {
+                val ok = WebDavManager.upload(requireContext(), password)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), if (ok) "备份成功" else "备份失败", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        .show()
+    true
+}
+
+findPreference<Preference>("webdavRestore")?.setOnPreferenceClickListener {
+    if (PrefManager.webdavUrl.isEmpty()) {
+        Toast.makeText(requireContext(), "请先配置 WebDAV", Toast.LENGTH_SHORT).show()
+        return@setOnPreferenceClickListener true
+    }
+    lifecycleScope.launch(Dispatchers.IO) {
+        val names = WebDavManager.listBackups()
+        withContext(Dispatchers.Main) {
+            if (names.isEmpty()) {
+                Toast.makeText(requireContext(), "未找到备份文件", Toast.LENGTH_SHORT).show()
+                return@withContext
+            }
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("选择要恢复的备份")
+                .setItems(names.toTypedArray()) { _, which ->
+                    val pv = LayoutInflater.from(requireContext())
+                        .inflate(R.layout.item_x_app_token, null, false)
+                    val pEdit: EditText = pv.findViewById(R.id.editText)
+                    pEdit.hint = "若备份加密，请输入密码"
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("确定恢复数据？")
+                        .setMessage("覆盖当前数据")
+                        .setView(pv)
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .setPositiveButton(android.R.string.ok) { _, _ ->
+                            val password = pEdit.text.toString().ifBlank { null }
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                val ok = WebDavManager.download(requireContext(), names[which], password)
+                                withContext(Dispatchers.Main) {
+                                    if (ok) AppDataManager.restartApp(requireContext())
+                                    else Toast.makeText(requireContext(), "恢复失败", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                        .show()
+                }
+                .show()
+        }
     }
     true
 }
