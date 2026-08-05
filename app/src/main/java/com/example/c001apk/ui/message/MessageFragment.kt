@@ -256,58 +256,58 @@ class MessageFragment : BaseFragment<FragmentMessageBinding>() {
     private fun initMenu() {
         binding.toolBar.apply {
             inflateMenu(R.menu.message_menu)
-            setOnMenuItemClickListener {
-                when (it.itemId) {
-                    R.id.switch_account -> {
-                        val accounts = AccountManager.accounts
-                        val names = accounts.map { acc ->
-                            val name = URLDecoder.decode(acc.username, "UTF-8")
-                            if (acc.uid == PrefManager.uid) "$name (当前)" else name
-                        } + "+ 添加账号"
-                        MaterialAlertDialogBuilder(requireContext()).apply {
-                            setTitle(R.string.switchAccount)
-                            setItems(names.toTypedArray()) { _, which ->
-                                if (which == accounts.size) {
-                                    IntentUtil.startActivity<WebViewActivity>(requireContext()) {
-                                        putExtra("url", "https://account.coolapk.com/auth/login?type=mobile")
-                                        putExtra("isLogin", true)
-                                    }
-                                } else if (accounts[which].uid != PrefManager.uid) {
-                                    AccountManager.switchTo(accounts[which])
-                                    AppDataManager.restartApp(requireContext())
-                                }
-                            }
-                            show()
-                        }
+            val actionView = menu.findItem(R.id.accountActions).actionView
+            actionView?.findViewById<View>(R.id.btnSwitchAccount)?.setOnClickListener { showSwitchAccountDialog() }
+            actionView?.findViewById<View>(R.id.btnLogout)?.setOnClickListener { showLogoutDialog() }
+        }
+    }
+
+    private fun showSwitchAccountDialog() {
+        val accounts = AccountManager.accounts
+        val names = accounts.map { acc ->
+            val name = URLDecoder.decode(acc.username, "UTF-8")
+            if (acc.uid == PrefManager.uid) "$name" else name
+        } + "添加账号"
+        MaterialAlertDialogBuilder(requireContext()).apply {
+            setTitle(R.string.switchAccount)
+            setItems(names.toTypedArray()) { _, which ->
+                if (which == accounts.size) {
+                    IntentUtil.startActivity<WebViewActivity>(requireContext()) {
+                        putExtra("url", "https://account.coolapk.com/auth/login?type=mobile")
+                        putExtra("isLogin", true)
                     }
-                    R.id.logout -> {
-                        MaterialAlertDialogBuilder(requireContext()).apply {
-                            setTitle(R.string.logoutTitle)
-                            setNegativeButton(android.R.string.cancel, null)
-                            setPositiveButton(android.R.string.ok) { _, _ ->
-                                viewModel.countList.value = emptyList()
-                                atme = null
-                                atcommentme = null
-                                feedlike = null
-                                contacts_follow = null
-                                viewModel.messCountList.value = true
-                                viewModel.footerState.value = FooterState.LoadingDone
-                                viewModel.messageData.postValue(emptyList())
-                                viewModel.isInit = true
-                                viewModel.isEnd = false
-                                PrefManager.isLogin = false
-                                PrefManager.uid = ""
-                                PrefManager.username = ""
-                                PrefManager.token = ""
-                                PrefManager.userAvatar = ""
-                                (requireActivity() as? MainActivity)?.recreate()
-                            }
-                            show()
-                        }
-                    }
+                } else if (accounts[which].uid != PrefManager.uid) {
+                    AccountManager.switchTo(accounts[which])
+                    AppDataManager.restartApp(requireContext())
                 }
-                return@setOnMenuItemClickListener true
             }
+            show()
+        }
+    }
+
+    private fun showLogoutDialog() {
+        MaterialAlertDialogBuilder(requireContext()).apply {
+            setTitle(R.string.logoutTitle)
+            setNegativeButton(android.R.string.cancel, null)
+            setPositiveButton(android.R.string.ok) { _, _ ->
+                viewModel.countList.value = emptyList()
+                atme = null
+                atcommentme = null
+                feedlike = null
+                contacts_follow = null
+                viewModel.messCountList.value = true
+                viewModel.footerState.value = FooterState.LoadingDone
+                viewModel.messageData.postValue(emptyList())
+                viewModel.isInit = true
+                viewModel.isEnd = false
+                PrefManager.isLogin = false
+                PrefManager.uid = ""
+                PrefManager.username = ""
+                PrefManager.token = ""
+                PrefManager.userAvatar = ""
+                (requireActivity() as? MainActivity)?.recreate()
+            }
+            show()
         }
     }
 
