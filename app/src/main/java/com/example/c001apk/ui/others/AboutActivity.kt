@@ -75,6 +75,14 @@ class AboutActivity : AbsAboutActivity() {
                 "https://github.com/JetBrains/kotlin"
             )
         )
+        items.add(
+            License(
+                "kotlinx.coroutines",
+                "JetBrains",
+                License.APACHE_2,
+                "https://github.com/Kotlin/kotlinx.coroutines"
+            )
+        )
         items.add(License("AndroidX", "Google", License.APACHE_2, "https://source.google.com"))
         items.add(
             License(
