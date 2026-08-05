@@ -54,6 +54,9 @@
     <string name="login">登录</string>
     <string name="logout">退出登录</string>
     <string name="switchAccount">切换账号</string>
+    <string name="webdav_config">WebDAV</string>
+    <string name="webdav_backup">备份数据至WebDAV</string>
+    <string name="webdav_restore">从WebDAV恢复数据</string>
     <string name="click_to_login">点击登录</string>
     <string name="logoutTitle">确定退出登录？</string>
     <string name="follow">关注</string>
