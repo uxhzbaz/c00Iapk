@@ -3,6 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <item
+        android:id="@+id/switch_account"
+        android:icon="@drawable/ic_account"
+        android:showAsAction="always"
+        android:title="@string/switchAccount"
+        tools:ignore="AlwaysShowAction" />
+
+    <item
         android:id="@+id/logout"
         android:icon="@drawable/ic_logout"
         android:showAsAction="always"
