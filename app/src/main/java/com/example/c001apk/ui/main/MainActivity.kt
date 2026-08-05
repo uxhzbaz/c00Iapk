@@ -33,7 +33,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IOnBottomClickContaine
     private val navViewBehavior by lazy { HideBottomViewOnScrollBehavior<BottomNavigationView>() }
     override var controller: IOnBottomClickListener? = null
     private lateinit var navView: NavigationBarView
-    private val isLogin by lazy { PrefManager.isLogin }
+    private val isLogin get() = PrefManager.isLogin
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
