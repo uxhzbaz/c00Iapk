@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.c001apk.constant.Constants
 import com.example.c001apk.logic.repository.NetworkRepo
+import com.example.c001apk.util.AccountManager
 import com.example.c001apk.util.CookieUtil
 import com.example.c001apk.util.Event
 import com.example.c001apk.util.PrefManager
@@ -59,6 +60,7 @@ class MainViewModel @Inject constructor(
                                         }
                                     PrefManager.token = login.token
                                     PrefManager.userAvatar = login.userAvatar
+                                    AccountManager.saveCurrent()
                                 }
                             } else if (response.body()?.message == "登录信息有误") {
                                 PrefManager.isLogin = false
