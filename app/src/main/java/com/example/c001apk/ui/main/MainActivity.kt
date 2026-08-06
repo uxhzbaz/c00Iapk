@@ -45,11 +45,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IOnBottomClickContaine
 
         if (viewModel.isInit) {
             viewModel.isInit = false
-            genData()
             initObserve()
         } else if (CookieUtil.badge != 0) {
             setBadge()
         }
+        genData()
 
         binding.viewPager.apply {
             offscreenPageLimit = 2
