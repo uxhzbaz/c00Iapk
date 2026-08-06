@@ -18,6 +18,7 @@ object PrefManager {
     private const val TOKEN = "token"
 
     private val pref = context.getSharedPreferences("settings", MODE_PRIVATE)
+    fun flush() = pref.edit().commit()
 
     var darkTheme: Int
         get() = pref.getInt(PREF_DARK_THEME, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
