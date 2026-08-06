@@ -9,7 +9,9 @@ import android.widget.Toast
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.ColorUtils
@@ -401,40 +403,79 @@ findPreference<Preference>("webdavRestore")?.setOnPreferenceClickListener {
         return@setOnPreferenceClickListener true
     }
     lifecycleScope.launch(Dispatchers.IO) {
-        val names = WebDavManager.listBackups()
+        val names = WebDavManager.listBackups().toMutableList()
         withContext(Dispatchers.Main) {
             if (names.isEmpty()) {
                 Toast.makeText(requireContext(), "未找到备份文件", Toast.LENGTH_SHORT).show()
                 return@withContext
             }
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle("选择要恢复的备份")
-                .setItems(names.toTypedArray()) { _, which ->
-                    val pv = LayoutInflater.from(requireContext())
-                        .inflate(R.layout.item_x_app_token, null, false)
-                    val pEdit: EditText = pv.findViewById(R.id.editText)
-                    pEdit.hint = "若备份加密，请输入密码"
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle("确定恢复数据？")
-                        .setMessage("覆盖当前数据")
-                        .setView(pv)
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .setPositiveButton(android.R.string.ok) { _, _ ->
-                            val password = pEdit.text.toString().ifBlank { null }
-                            lifecycleScope.launch(Dispatchers.IO) {
-                                val ok = WebDavManager.download(requireContext(), names[which], password)
-                                withContext(Dispatchers.Main) {
-                                    if (ok) AppDataManager.restartApp(requireContext())
-                                    else Toast.makeText(requireContext(), "恢复失败", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        }
-                        .show()
-                }
-                .show()
+            showRestoreListDialog(names)
         }
     }
     true
+}
+
+private fun showRestoreListDialog(names: MutableList<String>) {
+    lateinit var dialog: androidx.appcompat.app.AlertDialog
+    val adapter = object : ArrayAdapter<String>(requireContext(), 0, names) {
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val view = convertView
+                ?: LayoutInflater.from(context).inflate(R.layout.item_webdav_backup, parent, false)
+            val name = getItem(position)!!
+            view.findViewById<TextView>(R.id.name).text = name
+            view.findViewById<View>(R.id.delete).setOnClickListener {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("删除该备份？")
+                    .setMessage(name)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            val ok = WebDavManager.delete(name)
+                            withContext(Dispatchers.Main) {
+                                if (ok) {
+                                    names.remove(name)
+                                    notifyDataSetChanged()
+                                    if (names.isEmpty()) dialog.dismiss()
+                                } else {
+                                    Toast.makeText(requireContext(), "删除失败", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    }
+                    .show()
+            }
+            view.setOnClickListener { confirmRestore(name) }
+            return view
+        }
+    }
+    dialog = MaterialAlertDialogBuilder(requireContext())
+        .setTitle("选择要恢复的备份")
+        .setView(ListView(requireContext()).apply { this.adapter = adapter })
+        .setNegativeButton(android.R.string.cancel, null)
+        .show()
+}
+
+private fun confirmRestore(name: String) {
+    val pv = LayoutInflater.from(requireContext())
+        .inflate(R.layout.item_x_app_token, null, false)
+    val pEdit: EditText = pv.findViewById(R.id.editText)
+    pEdit.hint = "若备份加密，请输入密码"
+    MaterialAlertDialogBuilder(requireContext())
+        .setTitle("确定恢复数据？")
+        .setMessage("覆盖当前数据")
+        .setView(pv)
+        .setNegativeButton(android.R.string.cancel, null)
+        .setPositiveButton(android.R.string.ok) { _, _ ->
+            val password = pEdit.text.toString().ifBlank { null }
+            lifecycleScope.launch(Dispatchers.IO) {
+                val ok = WebDavManager.download(requireContext(), name, password)
+                withContext(Dispatchers.Main) {
+                    if (ok) AppDataManager.restartApp(requireContext())
+                    else Toast.makeText(requireContext(), "恢复失败", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        .show()
 }
 
 findPreference<Preference>("imageQuality")?.setOnPreferenceClickListener {
