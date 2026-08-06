@@ -43,9 +43,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IOnBottomClickContaine
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
+        initObserve()
         if (viewModel.isInit) {
             viewModel.isInit = false
-            initObserve()
         } else if (CookieUtil.badge != 0) {
             setBadge()
         }
