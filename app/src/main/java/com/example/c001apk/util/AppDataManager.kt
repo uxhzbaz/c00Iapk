@@ -104,6 +104,7 @@ object AppDataManager {
     }.isSuccess
 
     fun restartApp(context: Context) {
+        PrefManager.flush()
         val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
         val restartIntent = Intent.makeRestartActivityTask(launchIntent?.component)
         context.startActivity(restartIntent)
