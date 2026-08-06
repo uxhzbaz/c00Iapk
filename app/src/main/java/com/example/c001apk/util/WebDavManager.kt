@@ -50,6 +50,12 @@ object WebDavManager {
             .distinct().toList()
     }.getOrDefault(emptyList())
 
+    fun delete(name: String): Boolean = runCatching {
+        val url = PrefManager.webdavUrl.trimEnd('/') + "/" + name
+        val request = Request.Builder().url(url).delete().withAuth().build()
+        client.newCall(request).execute().use { it.isSuccessful }
+    }.getOrDefault(false)
+
     fun download(context: Context, name: String, password: String?): Boolean = runCatching {
         val url = PrefManager.webdavUrl.trimEnd('/') + "/" + name
         val request = Request.Builder().url(url).withAuth().build()
