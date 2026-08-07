@@ -68,7 +68,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             val view = LayoutInflater.from(requireContext())
                 .inflate(R.layout.item_restore_options, null, false)
             val editText: EditText = view.findViewById(R.id.editText)
-            val overrideModel: CheckBox = view.findViewById(R.id.overrideModel)
+            val overrideModel: android.widget.CheckBox = view.findViewById(R.id.overrideModel)
             editText.hint = "若备份加密，请输入密码"
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("确定恢复数据？")
@@ -497,28 +497,28 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
     }
 
     private fun confirmRestore(name: String) {
-        val pv = LayoutInflater.from(requireContext())
-            .inflate(R.layout.item_restore_options, null, false)
-        val pEdit: EditText = pv.findViewById(R.id.editText)
-        val overrideModel: CheckBox = pv.findViewById(R.id.overrideModel)
-        pEdit.hint = "若备份加密，请输入密码"
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("确定恢复数据？")
-            .setMessage("覆盖当前数据")
-            .setView(pv)
-            .setNegativeButton(android.R.string.cancel, null)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                val password = pEdit.text.toString().ifBlank { null }
-                val keepModel = !overrideModel.isChecked
-                lifecycleScope.launch(Dispatchers.IO) {
-                    val ok = WebDavManager.download(requireContext(), name, password, keepModel)
-                    withContext(Dispatchers.Main) {
-                        if (ok) AppDataManager.restartApp(requireContext())
-                        else Toast.makeText(requireContext(), "恢复失败", Toast.LENGTH_SHORT).show()
-                    }
+    val pv = LayoutInflater.from(requireContext())
+        .inflate(R.layout.item_restore_options, null, false)
+    val pEdit: EditText = pv.findViewById(R.id.editText)
+    val overrideModel: android.widget.CheckBox = pv.findViewById(R.id.overrideModel)
+    pEdit.hint = "若备份加密，请输入密码"
+    MaterialAlertDialogBuilder(requireContext())
+        .setTitle("确定恢复数据？")
+        .setMessage("覆盖当前数据")
+        .setView(pv)
+        .setNegativeButton(android.R.string.cancel, null)
+        .setPositiveButton(android.R.string.ok) { _, _ ->
+            val password = pEdit.text.toString().ifBlank { null }
+            val keepModel = !overrideModel.isChecked
+            lifecycleScope.launch(Dispatchers.IO) {
+                val ok = WebDavManager.download(requireContext(), name, password, keepModel)
+                withContext(Dispatchers.Main) {
+                    if (ok) AppDataManager.restartApp(requireContext())
+                    else Toast.makeText(requireContext(), "恢复失败", Toast.LENGTH_SHORT).show()
                 }
             }
-            .show()
-    }
+        }
+        .show()
+}
 
 }
