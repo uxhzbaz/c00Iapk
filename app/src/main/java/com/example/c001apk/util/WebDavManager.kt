@@ -82,3 +82,4 @@ object WebDavManager {
         }
         ok && AppDataManager.restore(context, Uri.fromFile(tmp), password, keepDeviceModel)
     }.getOrDefault(false)
+}
