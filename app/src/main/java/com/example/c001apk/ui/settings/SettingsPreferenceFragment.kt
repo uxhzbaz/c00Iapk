@@ -3,6 +3,7 @@ package com.example.c001apk.ui.settings
 import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.os.Bundle
+import android.text.format.Formatter
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ArrayAdapter
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.TextView
@@ -64,8 +66,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             uri ?: return@registerForActivityResult
             val view = LayoutInflater.from(requireContext())
-                .inflate(R.layout.item_x_app_token, null, false)
+                .inflate(R.layout.item_restore_options, null, false)
             val editText: EditText = view.findViewById(R.id.editText)
+            val overrideModel: CheckBox = view.findViewById(R.id.overrideModel)
             editText.hint = "若备份加密，请输入密码"
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("确定恢复数据？")
@@ -74,7 +77,8 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     val ok = AppDataManager.restore(
-                        requireContext(), uri, editText.text.toString().ifBlank { null }
+                        requireContext(), uri, editText.text.toString().ifBlank { null },
+                        !overrideModel.isChecked
                     )
                     if (ok) {
                         AppDataManager.restartApp(requireContext())
@@ -403,13 +407,13 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 return@setOnPreferenceClickListener true
             }
             lifecycleScope.launch(Dispatchers.IO) {
-                val names = WebDavManager.listBackups().toMutableList()
+                val files = WebDavManager.listBackups().toMutableList()
                 withContext(Dispatchers.Main) {
-                    if (names.isEmpty()) {
+                    if (files.isEmpty()) {
                         Toast.makeText(requireContext(), "未找到备份文件", Toast.LENGTH_SHORT).show()
                         return@withContext
                     }
-                    showRestoreListDialog(names)
+                    showRestoreListDialog(files)
                 }
             }
             true
@@ -450,27 +454,29 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
     }
 
-    private fun showRestoreListDialog(names: MutableList<String>) {
+    private fun showRestoreListDialog(files: MutableList<WebDavManager.BackupFile>) {
         lateinit var dialog: androidx.appcompat.app.AlertDialog
-        val adapter = object : ArrayAdapter<String>(requireContext(), 0, names) {
+        val adapter = object : ArrayAdapter<WebDavManager.BackupFile>(requireContext(), 0, files) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = convertView
                     ?: LayoutInflater.from(context).inflate(R.layout.item_webdav_backup, parent, false)
-                val name = getItem(position)!!
-                view.findViewById<TextView>(R.id.name).text = name
+                val file = getItem(position)!!
+                view.findViewById<TextView>(R.id.name).text = file.name
+                view.findViewById<TextView>(R.id.size).text =
+                    Formatter.formatShortFileSize(requireContext(), file.size)
                 view.findViewById<View>(R.id.delete).setOnClickListener {
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle("删除该备份？")
-                        .setMessage(name)
+                        .setMessage(file.name)
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton(android.R.string.ok) { _, _ ->
                             lifecycleScope.launch(Dispatchers.IO) {
-                                val ok = WebDavManager.delete(name)
+                                val ok = WebDavManager.delete(file.name)
                                 withContext(Dispatchers.Main) {
                                     if (ok) {
-                                        names.remove(name)
+                                        files.remove(file)
                                         notifyDataSetChanged()
-                                        if (names.isEmpty()) dialog.dismiss()
+                                        if (files.isEmpty()) dialog.dismiss()
                                     } else {
                                         Toast.makeText(requireContext(), "删除失败", Toast.LENGTH_SHORT).show()
                                     }
@@ -479,7 +485,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                         }
                         .show()
                 }
-                view.setOnClickListener { confirmRestore(name) }
+                view.setOnClickListener { confirmRestore(file.name) }
                 return view
             }
         }
@@ -492,8 +498,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
     private fun confirmRestore(name: String) {
         val pv = LayoutInflater.from(requireContext())
-            .inflate(R.layout.item_x_app_token, null, false)
+            .inflate(R.layout.item_restore_options, null, false)
         val pEdit: EditText = pv.findViewById(R.id.editText)
+        val overrideModel: CheckBox = pv.findViewById(R.id.overrideModel)
         pEdit.hint = "若备份加密，请输入密码"
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("确定恢复数据？")
@@ -502,8 +509,9 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 val password = pEdit.text.toString().ifBlank { null }
+                val keepModel = !overrideModel.isChecked
                 lifecycleScope.launch(Dispatchers.IO) {
-                    val ok = WebDavManager.download(requireContext(), name, password)
+                    val ok = WebDavManager.download(requireContext(), name, password, keepModel)
                     withContext(Dispatchers.Main) {
                         if (ok) AppDataManager.restartApp(requireContext())
                         else Toast.makeText(requireContext(), "恢复失败", Toast.LENGTH_SHORT).show()
