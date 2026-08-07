@@ -66,7 +66,12 @@ object WebDavManager {
         client.newCall(request).execute().use { it.isSuccessful }
     }.getOrDefault(false)
 
-    fun download(context: Context, name: String, password: String?): Boolean = runCatching {
+    fun download(
+        context: Context,
+        name: String,
+        password: String?,
+        keepDeviceModel: Boolean = true
+    ): Boolean = runCatching {
         val url = PrefManager.webdavUrl.trimEnd('/') + "/" + name
         val request = Request.Builder().url(url).withAuth().build()
         val tmp = File(context.cacheDir, "webdav_restore.tmp")
@@ -75,6 +80,5 @@ object WebDavManager {
             resp.body?.byteStream()?.use { input -> tmp.outputStream().use { input.copyTo(it) } }
             true
         }
-        ok && AppDataManager.restore(context, Uri.fromFile(tmp), password)
+        ok && AppDataManager.restore(context, Uri.fromFile(tmp), password, keepDeviceModel)
     }.getOrDefault(false)
-}
