@@ -61,7 +61,14 @@ object AppDataManager {
         ).use { it.rawQuery("PRAGMA wal_checkpoint(TRUNCATE)", null).use { c -> c.moveToFirst() } }
     }
 
-    fun restore(context: Context, uri: Uri, password: String? = null): Boolean = runCatching {
+    fun restore(
+        context: Context,
+        uri: Uri,
+        password: String? = null,
+        keepDeviceModel: Boolean = true
+    ): Boolean = runCatching {
+        val savedModel = PrefManager.MODEL
+        val savedDevice = PrefManager.xAppDevice
         context.contentResolver.openInputStream(uri)?.use { raw ->
             val buffered = raw.buffered().apply { mark(4) }
             val magic = ByteArray(4)
@@ -101,7 +108,24 @@ object AppDataManager {
                 }
             }
         } ?: return false
+        if (keepDeviceModel) restoreDeviceModel(context, savedModel, savedDevice)
     }.isSuccess
+
+    private fun restoreDeviceModel(context: Context, model: String, device: String) {
+        val file = File(context.applicationInfo.dataDir, "shared_prefs/settings.xml")
+        if (!file.exists()) return
+        var text = file.readText()
+        text = replacePrefString(text, "MODEL", model)
+        text = replacePrefString(text, "xAppDevice", device)
+        file.writeText(text)
+    }
+
+    private fun replacePrefString(xml: String, key: String, value: String): String {
+        val tag = "<string name=\"$key\">"
+        val regex = Regex(Regex.escape(tag) + "[^<]*</string>")
+        return if (regex.containsMatchIn(xml)) regex.replace(xml, "$tag$value</string>")
+        else xml.replaceFirst("</map>", "    $tag$value</string>\n</map>")
+    }
 
     fun restartApp(context: Context) {
         PrefManager.flush()
