@@ -37,7 +37,9 @@ object WebDavManager {
         client.newCall(request).execute().use { it.isSuccessful }
     }.getOrDefault(false)
 
-    fun listBackups(): List<String> = runCatching {
+    data class BackupFile(val name: String, val size: Long)
+
+    fun listBackups(): List<BackupFile> = runCatching {
         val request = Request.Builder()
             .url(PrefManager.webdavUrl)
             .method("PROPFIND", null)
@@ -45,9 +47,17 @@ object WebDavManager {
             .withAuth()
             .build()
         val body = client.newCall(request).execute().use { it.body?.string() }.orEmpty()
-        Regex("""<[^>]*:?href>([^<]*\.zip)</[^>]*:?href>""").findAll(body)
-            .map { it.groupValues[1].substringAfterLast('/') }
-            .distinct().toList()
+        Regex("""<[^>]*:?response>(.*?)</[^>]*:?response>""", RegexOption.DOT_MATCHES_ALL)
+            .findAll(body)
+            .mapNotNull { r ->
+                val block = r.groupValues[1]
+                val href = Regex("""<[^>]*:?href>([^<]*\.zip)</[^>]*:?href>""")
+                    .find(block)?.groupValues?.get(1) ?: return@mapNotNull null
+                val size = Regex("""<[^>]*:?getcontentlength>(\d+)</[^>]*:?getcontentlength>""")
+                    .find(block)?.groupValues?.get(1)?.toLongOrNull() ?: 0L
+                BackupFile(href.substringAfterLast('/'), size)
+            }
+            .distinctBy { it.name }.toList()
     }.getOrDefault(emptyList())
 
     fun delete(name: String): Boolean = runCatching {
