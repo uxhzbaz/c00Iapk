@@ -52,6 +52,7 @@ class MainViewModel @Inject constructor(
                                     CookieUtil.atcommentme = login.notifyCount.atcommentme
                                     CookieUtil.feedlike = login.notifyCount.feedlike
                                     CookieUtil.contacts_follow = login.notifyCount.contactsFollow
+                                    CookieUtil.message = login.notifyCount.message
                                     PrefManager.isLogin = true
                                     PrefManager.uid = login.uid
                                     PrefManager.username =
