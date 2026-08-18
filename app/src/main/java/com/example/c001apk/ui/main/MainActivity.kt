@@ -95,6 +95,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IOnBottomClickContaine
                     R.id.navigation_message -> {
                         binding.viewPager.setCurrentItem(1, true)
                         if (CookieUtil.badge != 0) {
+                            CookieUtil.badge = 0
                             navView.removeBadge(R.id.navigation_message)
                         }
                     }
