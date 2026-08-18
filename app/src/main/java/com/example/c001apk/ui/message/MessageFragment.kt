@@ -132,6 +132,11 @@ class MessageFragment : BaseFragment<FragmentMessageBinding>() {
         }
     }
 
+    override fun onDestroyView() {
+        binding.recyclerView.clearOnScrollListeners()
+        super.onDestroyView()
+    }
+
     private fun initScroll() {
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
