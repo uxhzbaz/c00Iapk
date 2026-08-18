@@ -61,7 +61,10 @@ class MessageThirdAdapter : RecyclerView.Adapter<MessageThirdAdapter.ThirdViewHo
                                 putExtra("type", "contactsFollow")
                             }
 
-                            "私信" -> putExtra("type", "list")
+                            "私信" -> {
+                                message = null
+                                putExtra("type", "list")
+                            }
                         }
                     }
                 }
@@ -75,6 +78,7 @@ class MessageThirdAdapter : RecyclerView.Adapter<MessageThirdAdapter.ThirdViewHo
                     1 -> atcommentme ?: 0
                     2 -> feedlike ?: 0
                     3 -> contacts_follow ?: 0
+                    4 -> message ?: 0
                     else -> 0
                 }
                 binding.badge.text = count.toString()
