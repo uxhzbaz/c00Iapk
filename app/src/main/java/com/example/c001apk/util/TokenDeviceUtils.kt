@@ -1,9 +1,10 @@
 package com.example.c001apk.util
 
 import android.content.Context
+import android.util.Base64
 import com.example.c001apk.constant.Constants
-import com.example.c001apk.util.Utils.getBase64
 import com.example.c001apk.util.Utils.getMD5
+import java.io.IOException
 import com.example.c001apk.util.Utils.randomAndroidVersionRelease
 import com.example.c001apk.util.Utils.randomBrand
 import com.example.c001apk.util.Utils.randomDeviceModel
@@ -44,22 +45,33 @@ object TokenDeviceUtils {
         return DeviceCode.encode("$szlmId; ; ; $mac; $manuFactor; $brand; $model; $buildNumber; null")
     }
 
-    fun String.getTokenV2(): String {
-        val timeStamp = (System.currentTimeMillis() / 1000f).toString()
+        private const val B =
+        "VFRCVU9GUXNRMEVsTFVNa1dERWpRU0VzVXlFbUxETkFVeTFEUEZZdUl5MGlNVU01SXpCVUpGY3RNeWtoTVVRMUpTMURPU1V4TXpoUUxWTXdWMDBzSXloU01UUXNXVEZEUkZFd1EwUlZNU1FrVVMwaktTTXRKRGhZTFZRa1VqRXpLU1FzTTBCVkxUUXdVaTAwTlNNc00yQlhMVk1sSkMxRE5GbE5MQ1EwV1RFekxTUXhRMEVoTEVNbElqRXpLRmN3TXowbExpTkVWekVqUFNZdU5Ea2tMRk13Vml4VEtGa3RRemhYTEZNc1dDNGpMU1l0VTJCVFRUQTBMRkV1TXpoVExqTWhJakZETUZNc0kwQlZMQ1FrVUN3ekpTSXNJekJTTUVNOFVDeEVMU0l0STJCUUxVUW9VeTBqTEZNc0l5VWtNRlF3VmswdFJDeFlNVE1sSkM0ME5TRXdVMFJRTEZNaElpMGtOU013VTJCUUxqTmdVeXdqT0ZFc05DeFRMRU13V0N4VUxTRXRJeVJUTEROQkl5MDBKRlpOTVVNc1VEQkVKRmd0TkMwa0xEUWtXQzFETUZNeFJDa2pMVk0wVml4VE1GZ3hJeTBtTFZNeEpTMHpKRlF4TTJCUUxTUTRXVEJETUZNdUkwVWhUU3d6UEZndFJEQlJNRE5FVVMwak9GWXVKRGtsTVNRMFV6QXpOU013UkRra01UTWtWU3hVTUZRdFJDeFlNVE5GSXl4RUxGWXNJelVoTGlRMFYwMHhOQ3hWTENNMFZ5NHpKRlV4TkN4VExGUTRWeTRqWUZZeEpEVWpMVU13VXpGRFBGSXNNMEVsTERNc1ZEQTBPU011TkNrbUxFUWtWaXhFTVNKTkxUTW9VaXd6TEZjdFUwUlFMaVF3VlRGREpTVXdVeWtqTVVNaEl5MHpJU1VzSTBFak1UTXdVUzFVTkZjeFJERWxMVVF0SlM0a05GSXNJemhaVFRCVFlGRXdReVJZTFNNbElTNDBMRmdzVkRSWkxVUW9XVEJEUUZZdFJDeFdMak5FVkRCRE1Ga3RORFVsTEZRNFZTMVVKRmd3TXpSV0xEUTRVVTB3UXkwbUxVUTRXUzFUTVNNc1V5VWlNVU5BVVN4VUxGWXVJMFJVTGlNc1dERkVMRk14STJCUUxWTTBXUzRrT0Zjd00wUlhMVk1vV0MwaktGRXhMQ00wVml4VE5GQXRSRFJXTFVRbEpDMVRKRkF3TkN4Z1lB"
+    private const val SB = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+    private const val BC = "./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    private const val F = Base64.NO_WRAP or Base64.NO_PADDING
+    private val blob by lazy { Base64.decode(B, 0) }
 
-        val base64TimeStamp = timeStamp.getBase64()
-        val md5TimeStamp = timeStamp.getMD5()
-        val md5DeviceCode = this.getMD5()
+    private fun gen(d: String, t: Long, c: Long): String? {
+        val i = ((t + c) % 100).toInt() * 4 + 0x80
+        val seg = runCatching { Base64.decode(blob.copyOfRange(i, i + 0x80), 0) }.getOrNull()
+            ?: return null
+        val p = "${Constants.APP_ID}&${String(seg)}&${d.getMD5()}&$t&$c"
+        val s = Base64.encodeToString("${t.toString(16)}/${p.getMD5()}".toByteArray(), F).take(22)
+        val z = s.dropLast(1) + SB[(SB.indexOf(s.last()) + 59) % 64]
+        if (z.any { it !in BC } || BC.indexOf(z.last()) % 16 != 0) return null
+        val h = BCrypt.hashpw(
+            Base64.encodeToString(p.toByteArray(), Base64.NO_WRAP).getMD5(),
+            "\$2a\$04\$$z"
+        )
+        return "v3" + Base64.encodeToString(("\$2y" + h.substring(3)).toByteArray(), F)
+    }
 
-        val token = "${Constants.APP_LABEL}?$md5TimeStamp$$md5DeviceCode&${Constants.APP_ID}"
-        val base64Token = token.getBase64()
-        val md5Base64Token = base64Token.getMD5()
-        val md5Token = token.getMD5()
-
-        val bcryptSalt = "${"$2a$10$$base64TimeStamp/$md5Token".substring(0, 31)}u"
-        val bcryptResult = BCrypt.hashpw(md5Base64Token, bcryptSalt)
-
-        return "v2${bcryptResult.replaceRange(0, 3, "$2y").getBase64()}"
+    fun String.getTokenV3(): String {
+        val c = PrefManager.VERSION_CODE.toLongOrNull() ?: Constants.VERSION_CODE.toLong()
+        val t = System.currentTimeMillis() / 1000
+        for (i in 0L..15L) gen(this, t + i, c)?.let { return it }
+        throw IOException("token gen failed")
     }
 
     fun getLastingDeviceCode(): String {
