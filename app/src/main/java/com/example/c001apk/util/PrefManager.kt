@@ -136,8 +136,9 @@ object PrefManager {
         get() = pref.getString("ANDROID_VERSION", "")!!
         set(value) = pref.edit().putString("ANDROID_VERSION", value).apply()
 
-    var USER_AGENT: String
+        var USER_AGENT: String
         get() = pref.getString("USER_AGENT", "")!!
+            .replace(Regex("\\+CoolMarket/\\S+$"), "+CoolMarket/$VERSION_NAME-$VERSION_CODE-${Constants.MODE}")
         set(value) = pref.edit().putString("USER_AGENT", value).apply()
 
     var SZLMID: String
