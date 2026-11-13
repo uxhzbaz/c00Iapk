@@ -13,10 +13,9 @@ object Constants {
         else "0"
     const val CHANNEL = "coolapk"
     const val MODE = "universal"
-    const val APP_LABEL = "token://com.coolapk.market/dcf01e569c1e3db93a3d0fcf191a622c"
-    const val VERSION_NAME = "13.4.1"
-    const val API_VERSION = "13"
-    const val VERSION_CODE = "2312121"
+    const val VERSION_NAME = "16.6.5"
+    const val API_VERSION = "16"
+    const val VERSION_CODE = "2610162"
     val USER_AGENT =
         "Dalvik/2.1.0 (Linux; U; Android ${PrefManager.ANDROID_VERSION}; ${PrefManager.MODEL} ${PrefManager.BUILDNUMBER}) (#Build; ${PrefManager.BRAND}; ${PrefManager.MODEL}; ${PrefManager.BUILDNUMBER}; ${PrefManager.ANDROID_VERSION}) +CoolMarket/${PrefManager.VERSION_NAME}-${PrefManager.VERSION_CODE}-${MODE}"
 
