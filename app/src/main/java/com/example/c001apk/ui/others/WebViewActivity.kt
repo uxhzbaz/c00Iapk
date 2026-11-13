@@ -1,5 +1,6 @@
 package com.example.c001apk.ui.others
 
+import com.example.c001apk.util.AppDataManager
 import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.ActivityNotFoundException
@@ -238,8 +239,8 @@ class WebViewActivity : BaseActivity<ActivityWebViewBinding>() {
                                         PrefManager.username = username
                                         PrefManager.token = token
                                         PrefManager.isLogin = true
-                                        ActivityCollector.recreateActivity(MainActivity::class.java.name)
                                         Toast.makeText(this@WebViewActivity, "登录成功", Toast.LENGTH_SHORT).show()
+                                        AppDataManager.restartApp(this@WebViewActivity)
                                     } else {
                                         Toast.makeText(this@WebViewActivity, "网页登录失败", Toast.LENGTH_SHORT).show()
                                     }
