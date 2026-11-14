@@ -10,9 +10,12 @@ import com.example.c001apk.adapter.ItemListener
 import com.example.c001apk.ui.base.BaseViewFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import com.example.c001apk.logic.model.MessageResponse
+import com.example.c001apk.ui.base.Searchable
+import com.example.c001apk.ui.base.hit
 
 @AndroidEntryPoint
-class MessageContentFragment : BaseViewFragment<MessageViewModel>() {
+class MessageContentFragment : BaseViewFragment<MessageViewModel>(), Searchable {
 
     @Inject
     lateinit var viewModelAssistedFactory: MessageViewModel.Factory
@@ -50,10 +53,7 @@ class MessageContentFragment : BaseViewFragment<MessageViewModel>() {
 
     override fun initObserve() {
         super.initObserve()
-        viewModel.messageListData.observe(viewLifecycleOwner) {
-            viewModel.listSize = it.size
-            messAdapter.submitList(it)
-        }
+        viewModel.messageListData.observe(viewLifecycleOwner) { showList(it) }
 
         viewModel.footerState.observe(viewLifecycleOwner) {
             footerAdapter.setLoadState(it)
@@ -62,4 +62,18 @@ class MessageContentFragment : BaseViewFragment<MessageViewModel>() {
             }
         }
     }
-}
+    private fun showList(all: List<MessageResponse.Data>) {
+        val k = viewModel.kw
+        val l = if (k.isEmpty()) all else all.filter {
+            it.note.hit(k) || it.message.hit(k) || it.fromusername.hit(k)
+                    || it.username.hit(k) || it.title.hit(k) || it.infoHtml.hit(k)
+        }
+        viewModel.listSize = all.size
+        messAdapter.submitList(l)
+        autoMore(l.size)
+    }
+
+    override fun search(k: String) {
+        viewModel.kw = k
+        if (view != null && !viewModel.isInit) showList(viewModel.messageListData.value.orEmpty())
+    }}
