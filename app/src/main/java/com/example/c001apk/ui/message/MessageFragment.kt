@@ -5,7 +5,9 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import com.example.c001apk.ui.main.MainViewModel
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -44,6 +46,7 @@ import java.net.URLDecoder
 class MessageFragment : BaseFragment<FragmentMessageBinding>() {
 
     private val viewModel by viewModels<MessageViewModel>()
+    private val mainVM by activityViewModels<MainViewModel>()
     private val messageFirstAdapter by lazy { MessageFirstAdapter() }
     private val messageSecondAdapter by lazy { MessageSecondAdapter() }
     private val messageThirdAdapter by lazy { MessageThirdAdapter() }
@@ -89,6 +92,14 @@ class MessageFragment : BaseFragment<FragmentMessageBinding>() {
     }
 
     private fun initObserve() {
+        mainVM.loginOk.observe(viewLifecycleOwner) { e ->
+            e.getContentIfNotHandledOrReturnNull()?.let {
+                if (PrefManager.isLogin) {
+                    showProfile()
+                    getData()
+                }
+            }
+        }
         viewModel.countList.observe(viewLifecycleOwner) {
             messageFirstAdapter.setFFFList(it)
         }
