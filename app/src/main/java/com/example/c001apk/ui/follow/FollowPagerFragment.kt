@@ -73,6 +73,7 @@ class FollowPagerFragment : BasePagerFragment() {
     override fun initBar() {
         super.initBar()
         binding.collapsingToolbar.isTitleEnabled = false
+        initSearch()
         binding.toolBar.title = when (type) {
             "feed" -> "我的动态"
 
