@@ -291,19 +291,23 @@ class MessageFragment : BaseFragment<FragmentMessageBinding>() {
     private fun initMenu() {
         binding.toolBar.apply {
             inflateMenu(R.menu.list_search_menu)
-            (menu.findItem(R.id.lsearch).actionView as SearchView)
-                .setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                    override fun onQueryTextSubmit(q: String?) = false
-                    override fun onQueryTextChange(q: String?): Boolean {
-                        viewModel.kw = q.orEmpty().trim()
-                        showMsg(viewModel.messageData.value.orEmpty())
-                        return true
-                    }
-                })
             inflateMenu(R.menu.message_menu)
             val actionView = menu.findItem(R.id.accountActions).actionView
             actionView?.findViewById<View>(R.id.btnSwitchAccount)?.setOnClickListener { showSwitchAccountDialog() }
             actionView?.findViewById<View>(R.id.btnLogout)?.setOnClickListener { showLogoutDialog() }
+            val sv = menu.findItem(R.id.lsearch).actionView as SearchView
+            (actionView?.layoutParams as? androidx.appcompat.widget.Toolbar.LayoutParams)?.let { src ->
+                sv.layoutParams = androidx.appcompat.widget.Toolbar.LayoutParams(src.width, src.height)
+                    .apply { gravity = src.gravity }
+            }
+            sv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(q: String?) = false
+                override fun onQueryTextChange(q: String?): Boolean {
+                    viewModel.kw = q.orEmpty().trim()
+                    showMsg(viewModel.messageData.value.orEmpty())
+                    return true
+                }
+            })
         }
     }
 
