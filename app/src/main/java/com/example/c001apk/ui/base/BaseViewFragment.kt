@@ -158,6 +158,15 @@ abstract class BaseViewFragment<VM : BaseViewModel> : Fragment() {
         viewModel.fetchData()
     }
 
+    fun autoMore(n: Int) {
+        if (viewModel.kw.isNotEmpty() && n < 10 && !viewModel.isEnd && viewModel.page < 50)
+            binding.root.postDelayed({
+                if (_binding != null && viewModel.kw.isNotEmpty() && !viewModel.isEnd
+                    && !viewModel.isLoadMore && !viewModel.isRefreshing
+                ) loadMore()
+            }, 300)
+    }
+
     private fun initScroll() {
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
