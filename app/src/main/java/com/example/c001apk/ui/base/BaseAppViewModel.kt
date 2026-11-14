@@ -22,6 +22,11 @@ abstract class BaseAppViewModel(
 ) : BaseViewModel() {
 
     val dataList = MutableLiveData<List<HomeFeedResponse.Data>>()
+    var shown: List<HomeFeedResponse.Data> = emptyList()
+
+    private fun rm(l: MutableList<HomeFeedResponse.Data>, p: Int) {
+        if (kw.isEmpty()) l.removeAt(p) else shown.getOrNull(p)?.let { l.remove(it) }
+    }
 
     val footerState = MutableLiveData<FooterState>()
     val toastText = MutableLiveData<Event<String?>>()
@@ -89,7 +94,7 @@ abstract class BaseAppViewModel(
                 blackListRepo.saveUid(uid)
             }
             val currentList = dataList.value?.toMutableList() ?: ArrayList()
-            currentList.removeAt(position)
+            rm(currentList, position)
             dataList.postValue(currentList)
         }
 
@@ -109,7 +114,7 @@ abstract class BaseAppViewModel(
                         if (response.data == "删除成功") {
                             toastText.postValue(Event("删除成功"))
                             val updateList = dataList.value?.toMutableList() ?: ArrayList()
-                            updateList.removeAt(position)
+                            rm(updateList, position)
                             dataList.postValue(updateList)
                         } else if (!response.message.isNullOrEmpty()) {
                             response.message.let {
