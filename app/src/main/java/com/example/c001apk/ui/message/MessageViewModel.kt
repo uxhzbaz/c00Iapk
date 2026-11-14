@@ -37,6 +37,7 @@ class MessageViewModel @Inject constructor(
     var isRefreshing: Boolean = false
     var isLoadMore: Boolean = false
     var isEnd: Boolean = false
+    var kw: String = ""
 
     var countList = MutableLiveData<List<String>>()
     var messCountList = MutableLiveData<Boolean>()
