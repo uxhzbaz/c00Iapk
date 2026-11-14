@@ -41,6 +41,9 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import java.net.URLDecoder
+import androidx.appcompat.widget.SearchView
+import com.example.c001apk.logic.model.MessageResponse
+import com.example.c001apk.ui.base.hit
 
 @AndroidEntryPoint
 class MessageFragment : BaseFragment<FragmentMessageBinding>() {
@@ -136,12 +139,28 @@ class MessageFragment : BaseFragment<FragmentMessageBinding>() {
             }
         }
 
-        viewModel.messageData.observe(viewLifecycleOwner) {
-            viewModel.listSize = it.size
-            mAdapter.submitList(it)
-            binding.vfContainer.displayedChild = it.size
-        }
+        viewModel.messageData.observe(viewLifecycleOwner) { showMsg(it) }
     }
+
+    private fun showMsg(all: List<MessageResponse.Data>) {
+        val k = viewModel.kw
+        val l = if (k.isEmpty()) all else all.filter {
+            it.note.hit(k) || it.message.hit(k) || it.fromusername.hit(k)
+                    || it.title.hit(k) || it.infoHtml.hit(k)
+        }
+        viewModel.listSize = all.size
+        mAdapter.submitList(l)
+        binding.vfContainer.displayedChild = l.size
+        if (k.isNotEmpty() && l.size < 10 && !viewModel.isEnd && viewModel.page < 50)
+            binding.root.postDelayed({
+                if (view != null && viewModel.kw.isNotEmpty() && !viewModel.isEnd
+                    && !viewModel.isLoadMore && !viewModel.isRefreshing
+                ) loadMore()
+            }, 300)
+    }
+
+    private fun rawPos(p: Int) = viewModel.messageData.value.orEmpty()
+        .indexOf(mAdapter.currentList.getOrNull(p)).let { if (it < 0) p else it }
 
     override fun onDestroyView() {
         binding.recyclerView.clearOnScrollListeners()
@@ -275,6 +294,16 @@ class MessageFragment : BaseFragment<FragmentMessageBinding>() {
             val actionView = menu.findItem(R.id.accountActions).actionView
             actionView?.findViewById<View>(R.id.btnSwitchAccount)?.setOnClickListener { showSwitchAccountDialog() }
             actionView?.findViewById<View>(R.id.btnLogout)?.setOnClickListener { showLogoutDialog() }
+            inflateMenu(R.menu.list_search_menu)
+            (menu.findItem(R.id.lsearch).actionView as SearchView)
+                .setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                    override fun onQueryTextSubmit(q: String?) = false
+                    override fun onQueryTextChange(q: String?): Boolean {
+                        viewModel.kw = q.orEmpty().trim()
+                        showMsg(viewModel.messageData.value.orEmpty())
+                        return true
+                    }
+                })
         }
     }
 
@@ -385,7 +414,7 @@ class MessageFragment : BaseFragment<FragmentMessageBinding>() {
         override fun onBlockUser(id: String, uid: String, position: Int) {
             viewModel.saveUid(uid)
             val currentList = viewModel.messageData.value?.toMutableList() ?: ArrayList()
-            currentList.removeAt(position)
+            currentList.removeAt(rawPos(position))
             viewModel.messageData.postValue(currentList)
         }
 
@@ -394,7 +423,7 @@ class MessageFragment : BaseFragment<FragmentMessageBinding>() {
                 setTitle("删除来自 $uname 的通知？")
                 setNegativeButton(android.R.string.cancel, null)
                 setPositiveButton(android.R.string.ok) { _, _ ->
-                    viewModel.onPostDelete(position, id)
+                    viewModel.onPostDelete(rawPos(position), id)
                 }
                 show()
             }
