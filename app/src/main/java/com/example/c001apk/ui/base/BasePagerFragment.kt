@@ -23,6 +23,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
+interface Searchable {
+    fun search(k: String)
+}
+
 // Toolbar + TabLayout + ViewPager2
 abstract class BasePagerFragment : Fragment(), IOnTabClickContainer {
 
@@ -105,6 +109,18 @@ abstract class BasePagerFragment : Fragment(), IOnTabClickContainer {
     }
 
     open fun onTabReselectedExtra() {}
+
+    fun initSearch() {
+        binding.toolBar.inflateMenu(R.menu.list_search_menu)
+        (binding.toolBar.menu.findItem(R.id.lsearch).actionView as androidx.appcompat.widget.SearchView)
+            .setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(q: String?) = false
+                override fun onQueryTextChange(q: String?): Boolean {
+                    childFragmentManager.fragments.forEach { (it as? Searchable)?.search(q.orEmpty().trim()) }
+                    return true
+                }
+            })
+    }
 
     open fun iOnTabSelected(tab: TabLayout.Tab?) {}
 
