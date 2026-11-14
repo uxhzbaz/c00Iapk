@@ -10,7 +10,7 @@ import com.example.c001apk.ui.home.IOnTabClickListener
 
 // SwipeRefreshLayout + RecyclerView
 abstract class BaseAppFragment<VM : BaseAppViewModel> : BaseViewFragment<VM>(),
-    IOnTabClickListener {
+    IOnTabClickListener, Searchable {
 
     private lateinit var appAdapter: AppAdapter
     private lateinit var footerAdapter: FooterAdapter
@@ -25,13 +25,28 @@ abstract class BaseAppFragment<VM : BaseAppViewModel> : BaseViewFragment<VM>(),
             }
         }
 
-        viewModel.dataList.observe(viewLifecycleOwner) {
-            viewModel.listSize = it.size
-            appAdapter.submitList(it)
-            if (binding.vfContainer.displayedChild != it.size)
-                binding.vfContainer.displayedChild = it.size
-        }
+        viewModel.dataList.observe(viewLifecycleOwner) { showList(it) }
 
+    }
+
+    private fun showList(all: List<com.example.c001apk.logic.model.HomeFeedResponse.Data>) {
+        val k = viewModel.kw
+        val l = if (k.isEmpty()) all else all.filter {
+            it.message.hit(k) || it.username.hit(k) || it.title.hit(k) || it.messageTitle.hit(k)
+                    || it.ttitle.hit(k) || it.infoHtml.hit(k) || it.userInfo?.username.hit(k)
+                    || it.feed?.message.hit(k)
+        }
+        viewModel.shown = l
+        viewModel.listSize = all.size
+        appAdapter.submitList(l)
+        if (binding.vfContainer.displayedChild != l.size)
+            binding.vfContainer.displayedChild = l.size
+        autoMore(l.size)
+    }
+
+    override fun search(k: String) {
+        viewModel.kw = k
+        if (view != null && !viewModel.isInit) showList(viewModel.dataList.value.orEmpty())
     }
 
     override fun initAdapter() {
