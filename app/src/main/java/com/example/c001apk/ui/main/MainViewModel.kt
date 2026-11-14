@@ -24,6 +24,7 @@ class MainViewModel @Inject constructor(
     var lastCheck = System.currentTimeMillis()
     var isInit: Boolean = true
     val setBadge = MutableLiveData<Event<Boolean>>()
+    val loginOk = MutableLiveData<Event<Boolean>>()
 
     fun fetchAppInfo(id: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -62,6 +63,7 @@ class MainViewModel @Inject constructor(
                                     PrefManager.token = login.token
                                     PrefManager.userAvatar = login.userAvatar
                                     AccountManager.saveCurrent()
+                                    loginOk.postValue(Event(true))
                                 }
                             } else if (response.body()?.message == "登录信息有误") {
                                 PrefManager.isLogin = false
