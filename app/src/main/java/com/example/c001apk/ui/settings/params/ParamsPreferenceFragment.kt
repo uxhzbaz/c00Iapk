@@ -49,6 +49,8 @@ class ParamsPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.O
 
     @SuppressLint("SetTextI18n", "InflateParams")
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        if (PrefManager.xAppDevice.isEmpty() || PrefManager.MODEL.isEmpty())
+            PrefManager.xAppDevice = getDeviceCode(true)
         setPreferencesFromResource(R.xml.params, null)
 
         findPreference<Preference>("VERSION_NAME")?.apply {
