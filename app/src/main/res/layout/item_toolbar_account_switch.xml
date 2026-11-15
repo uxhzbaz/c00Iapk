@@ -34,15 +34,16 @@
     </LinearLayout>
 
     <ImageButton
-        android:id="@+id/btnLogout"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="9dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/logout"
-        android:padding="2dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_logout" />
+    android:id="@+id/btnLogout"
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+    android:layout_gravity="end"
+    android:layout_marginTop="9dp"
+    android:layout_weight="1"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:contentDescription="@string/logout"
+    android:padding="2dp"
+    android:scaleType="centerInside"
+    android:src="@drawable/ic_logout" />
 
 </LinearLayout>
