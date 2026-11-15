@@ -39,5 +39,17 @@
         android:id="@+id/block"
         android:showAsAction="never"
         android:title="@string/block" />
+    
+    <item
+    android:id="@+id/more"
+    android:showAsAction="never"
+    android:title="更多信息">
+    <menu>
+        <item android:id="@+id/hotReply" android:title="热门回复" />
+        <item android:id="@+id/likeUsers" android:title="点赞用户" />
+        <item android:id="@+id/forwardUsers" android:title="转发用户" />
+        <item android:id="@+id/changeHistory" android:title="修改历史" />
+    </menu>
+</item>
 
 </menu>
