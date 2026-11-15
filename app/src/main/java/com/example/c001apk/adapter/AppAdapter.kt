@@ -240,7 +240,7 @@ class AppAdapter(
                 binding.fans.text = "${data.fUserInfo.fans}粉丝"
                 binding.act.text = DateUtils.fromToday(data.fUserInfo.logintime) + "活跃"
                 ImageUtil.showIMG(binding.avatar, data.fUserInfo.userAvatar)
-            } else if (data.userInfo != null) {
+            } else {
                 binding.uid = data.uid
                 binding.uname.text = data.username
                 binding.follow.text = "${data.follow}关注"
