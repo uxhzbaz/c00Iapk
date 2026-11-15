@@ -57,6 +57,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+import com.example.c001apk.ui.carousel.CarouselActivity
 
 
 @AndroidEntryPoint
@@ -370,6 +371,13 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
             }
             setOnMenuItemClickListener {
                 when (it.itemId) {
+                    R.id.hotReply -> openList("#/feed/hotReplyList?id=${viewModel.id}&discussMode=1", "热门回复")
+                    R.id.likeUsers -> openList("#/feed/likeList?id=${viewModel.id}&listType=lastupdate_desc", "点赞用户")
+                    R.id.forwardUsers -> openList("#/feed/forwardList?id=${viewModel.id}&type=${viewModel.feedType ?: "feed"}", "转发用户")
+                    R.id.changeHistory -> viewModel.fetchChangeHistory { s ->
+                    MaterialAlertDialogBuilder(requireContext()).setTitle("修改历史")
+                    .setMessage(s).setPositiveButton(android.R.string.ok, null).show()
+}
                     R.id.showQuestion -> {
                         viewModel.feedDataList?.getOrNull(0)?.fid?.let {
                             IntentUtil.startActivity<FeedActivity>(requireContext()) {
@@ -517,6 +525,11 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
             "" -> binding.buttonToggle.check(R.id.author)
         }
         feedFixAdapter.setListType(viewModel.listType)
+    }
+    
+    private fun openList(url: String, title: String) =
+    IntentUtil.startActivity<CarouselActivity>(requireContext()) {
+        putExtra("url", url); putExtra("title", title)
     }
 
     inner class ItemClickListener : ItemListener {
