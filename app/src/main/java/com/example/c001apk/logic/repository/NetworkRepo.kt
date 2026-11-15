@@ -45,6 +45,13 @@ class NetworkRepo @Inject constructor(
     suspend fun getFeedContent(id: String, rid: String?) = fire {
         Result.success(api2Service.getFeedContent(id, rid).await())
     }
+    
+    suspend fun getChangeHistory(id: String) = fire {
+    Result.success(api2Service.getChangeHistory(id).await().string())
+    }
+    suspend fun getReplyDetail(id: String) = fire {
+    Result.success(api2Service.getReplyDetail(id).await().string())
+    }
 
     suspend fun getFeedContentReply(
         id: String,
