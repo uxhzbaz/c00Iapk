@@ -209,6 +209,36 @@ class FeedViewModel @AssistedInject constructor(
                 }
         }
     }
+    
+    fun fetchChangeHistory(done: (String) -> Unit) {
+    viewModelScope.launch(Dispatchers.IO) {
+        networkRepo.getChangeHistory(id).collect { r ->
+            val s = r.getOrNull()?.let {
+                val a = org.json.JSONObject(it).optJSONArray("data")
+                (0 until (a?.length() ?: 0)).joinToString("\n\n") { i ->
+                    val o = a!!.getJSONObject(i)
+                    val t = o.optString("last_change_time").ifEmpty { o.optString("dateline") }
+                    val d = if (t.isNotEmpty()) com.example.c001apk.util.DateUtils.fromToday(t.toLong()) else ""
+                    "${if (i == 0 && o.optInt("isHistory") == 0) "当前版本" else "第${o.optInt("change_count")}次编辑"} $d\n" +
+                        o.optString("message_title").ifEmpty { o.optString("title") } + "\n" + o.optString("message")
+                }.ifEmpty { "暂无修改记录" }
+            } ?: "加载失败"
+            withContext(Dispatchers.Main) { done(s) }
+        }
+    }
+}
+    fun fetchReplyDetail(rid: String, done: (String) -> Unit) {
+    viewModelScope.launch(Dispatchers.IO) {
+        networkRepo.getReplyDetail(rid).collect { r ->
+            val s = r.getOrNull()?.let {
+                val o = org.json.JSONObject(it).optJSONObject("data")
+                "设备：${o?.optString("device_title").orEmpty().ifEmpty { o?.optString("device_name").orEmpty() }}\n" +
+                    "属地：${o?.optString("ipLocation").orEmpty().ifEmpty { o?.optString("ip_location").orEmpty() }}"
+            } ?: "加载失败"
+            withContext(Dispatchers.Main) { done(s) }
+        }
+    }
+}
 
 
     var feedData: HomeFeedResponse.Data? = null
