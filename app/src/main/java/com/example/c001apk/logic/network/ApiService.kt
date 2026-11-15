@@ -323,5 +323,10 @@ interface ApiService {
 
     @GET("/v6/notification/checkCount")
     fun checkCount(): Call<CheckCountResponse>
+    
+    @GET("/v6/feed/changeHistoryList")
+    fun getChangeHistory(@Query("id") id: String): Call<ResponseBody>
+    @GET("/v6/feed/replyDetail")
+    fun getReplyDetail(@Query("id") id: String): Call<ResponseBody>
 
 }
