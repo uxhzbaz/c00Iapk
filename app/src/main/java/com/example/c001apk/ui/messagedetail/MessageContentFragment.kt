@@ -62,11 +62,12 @@ class MessageContentFragment : BaseViewFragment<MessageViewModel>(), Searchable 
             }
         }
     }
-    private fun showList(all: List<MessageResponse.Data>) {
+        private fun showList(all: List<MessageResponse.Data>) {
         val k = viewModel.kw
         val l = if (k.isEmpty()) all else all.filter {
             it.note.hit(k) || it.message.hit(k) || it.fromusername.hit(k)
-                    || it.username.hit(k) || it.likeUsername.hit(k) || it.title.hit(k) it.infoHtml.hit(k)
+                    || it.username.hit(k) || it.likeUsername.hit(k)
+                    || it.title.hit(k) || it.infoHtml.hit(k)
         }
         viewModel.listSize = all.size
         messAdapter.submitList(l)
