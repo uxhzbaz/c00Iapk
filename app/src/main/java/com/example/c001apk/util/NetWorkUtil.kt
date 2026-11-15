@@ -46,6 +46,7 @@ object NetWorkUtil {
             .replace("www.", "")
             .replace("coolapk1s", "coolapk")
             .replace("coolapk.com", "")
+            .replaceFirst(Regex("^/+"), "/")
 
         if (replace.startsWith("/feed/")) {
             with(replace.indexOfFirst { it == '?' }) {
