@@ -295,7 +295,10 @@ class MessageFragment : BaseFragment<FragmentMessageBinding>() {
             val actionView = menu.findItem(R.id.accountActions).actionView
             actionView?.findViewById<View>(R.id.btnSwitchAccount)?.setOnClickListener { showSwitchAccountDialog() }
             actionView?.findViewById<View>(R.id.btnLogout)?.setOnClickListener { showLogoutDialog() }
-            val sv = menu.findItem(R.id.lsearch).actionView as SearchView
+            val si = menu.findItem(R.id.lsearch)
+si.isVisible = false
+actionView?.findViewById<View>(R.id.btnSearch)?.setOnClickListener { si.expandActionView() }
+val sv = si.actionView as SearchView
             (actionView?.layoutParams as? androidx.appcompat.widget.Toolbar.LayoutParams)?.let { src ->
                 sv.layoutParams = androidx.appcompat.widget.Toolbar.LayoutParams(src.width, src.height)
                     .apply { gravity = src.gravity }
