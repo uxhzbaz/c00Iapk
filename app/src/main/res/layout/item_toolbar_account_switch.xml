@@ -5,16 +5,33 @@
     android:orientation="vertical"
     android:gravity="center">
 
-    <ImageButton
-        android:id="@+id/btnSwitchAccount"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/switchAccount"
-        android:padding="2dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_account" />
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageButton
+            android:id="@+id/btnSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/search"
+            android:padding="2dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_search" />
+
+        <ImageButton
+            android:id="@+id/btnSwitchAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/switchAccount"
+            android:padding="2dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_account" />
+    </LinearLayout>
 
     <ImageButton
         android:id="@+id/btnLogout"
