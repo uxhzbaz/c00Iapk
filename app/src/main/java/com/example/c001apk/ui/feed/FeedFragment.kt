@@ -743,6 +743,16 @@ class FeedFragment : BaseFragment<FragmentFeedBinding>() {
                         rPosition
                     )
                 }
+
+                R.id.replyDetail -> {
+                    viewModel.fetchReplyDetail(id) { s ->
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle("评论详情")
+                            .setMessage(s)
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show()
+                    }
+                }
             }
             return true
         }
